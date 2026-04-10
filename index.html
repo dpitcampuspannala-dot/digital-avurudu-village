@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ඩිජිටල් අවුරුදු ගම්මානය - 2026</title>
+    <style>
+        /* මූලික සැකසුම් */
+        body { margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #fff9f0; overflow-x: hidden; }
+        
+        /* Header & Hero Section */
+        header { 
+            background: linear-gradient(rgba(139, 0, 0, 0.7), rgba(139, 0, 0, 0.7)), url('avurudu_bg.jpg'); 
+            background-size: cover; background-position: center; height: 100vh; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            text-align: center; color: #f1c40f; position: relative;
+        }
+
+        /* About Menu Dot (⋮) */
+        .about-trigger {
+            position: absolute; top: 25px; right: 25px; cursor: pointer;
+            font-size: 35px; color: #f1c40f; transition: 0.3s; z-index: 1001;
+            line-height: 1;
+        }
+        .about-trigger:hover { transform: rotate(90deg); color: #fff; }
+
+        h1 { font-size: 4rem; margin-bottom: 10px; text-shadow: 3px 3px 10px rgba(0,0,0,0.5); }
+        p.sub-text { font-size: 1.5rem; color: #fff; margin-bottom: 40px; }
+
+        /* Button Container */
+        .btn-container {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        /* Explore Buttons Common Style */
+        .explore-btn {
+            padding: 15px 35px; border-radius: 50px; text-decoration: none; 
+            font-size: 1.2rem; font-weight: bold; transition: 0.3s; 
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3); border: 2px solid transparent;
+        }
+
+        /* Enter Village Button */
+        .village-btn {
+            background-color: #f1c40f; color: #8b0000;
+        }
+        .village-btn:hover { background-color: #fff; transform: scale(1.05); }
+
+        /* Games Page Button */
+        .games-btn {
+            background-color: transparent; color: #f1c40f; border: 2px solid #f1c40f;
+        }
+        .games-btn:hover { background-color: #f1c40f; color: #8b0000; transform: scale(1.05); }
+
+        /* Floating Music Toggle */
+        .music-control {
+            position: fixed; bottom: 30px; right: 30px; background-color: #f1c40f; color: #8b0000;
+            padding: 12px 25px; border-radius: 50px; cursor: pointer; display: flex; align-items: center;
+            gap: 10px; font-weight: bold; box-shadow: 0 5px 20px rgba(0,0,0,0.4); z-index: 1000;
+        }
+
+        /* About Modal (DP Education) */
+        .modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); z-index: 2000; align-items: center; justify-content: center;
+        }
+        .modal-content {
+            background: white; padding: 40px; border-radius: 25px; max-width: 550px; width: 90%;
+            text-align: center; border: 5px solid #f1c40f; position: relative;
+        }
+        .close-modal { position: absolute; top: 15px; right: 20px; font-size: 30px; cursor: pointer; color: #8b0000; font-weight: bold; }
+        .dp-logo { width: 180px; margin-bottom: 20px; }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 2.5rem; }
+            p.sub-text { font-size: 1.1rem; }
+            .btn-container { flex-direction: column; gap: 15px; }
+            .explore-btn { font-size: 1rem; padding: 12px 30px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="about-trigger" onclick="openAbout()">⋮</div>
+
+    <header>
+        <h1>අවුරුදු අසිරිය - 2026 🌞</h1>
+        <p class="sub-text">සිරිත් විරිත් සහ සාම්ප්‍රදායික උරුමයේ ඩිජිටල් අත්දැකීම</p>
+        
+        <div class="btn-container">
+            <a href="avurudu_info.html" class="explore-btn village-btn">ගම්මානයට පිවිසෙන්න</a>
+            <a href="games.html" class="explore-btn games-btn">ජන ක්‍රීඩා පිටිය</a>
+        </div>
+    </header>
+
+    <audio id="avuruduAudio" loop>
+        <source src="avurudu_song.mp3" type="audio/mpeg">
+    </audio>
+
+    <div class="music-control" onclick="toggleMusic()">
+        <span id="musicIcon">🎵</span> <span id="musicText">සංගීතය ප්ලේ කරන්න</span>
+    </div>
+
+    <div id="aboutModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeAbout()">&times;</span>
+            <img src="DP.png" alt="DP Education" class="dp-logo" onerror="this.src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR61f8HlG0qf_K3hT9i-7kG3y_L3I5I5fS0uA&s'">
+            <h2>DP Education Bulathkohupitiya </h2>
+            <p style="text-align: justify; line-height: 1.8; color: #444;">
+                <b>DP Education Bulathkohupitiya</b> යනු ශ්‍රී ලාංකීය දරු පරපුරේ අධ්‍යාපනය ඩිජිටල් තාක්ෂණය ඔස්සේ ඉහළ නැංවීමට කැපවී සිටින මෙරට ප්‍රමුඛතම වේදිකාවයි. 
+                අනාගත ලෝකයට ගැළපෙන කුසලතා පූර්පුරක් බිහි කිරීම අපගේ අරමුණයි. 
+                සංස්කෘතික වටිනාකම් තාක්ෂණය සමඟ මුසු කර දරුවන් අතරට ගෙනයාම අපගේ එක් මෙහෙවරකි.
+            </p>
+            <div style="margin-top: 20px;">
+                <a href="https://whatsapp.com/channel/0029Vb7Kc37CRs1lKrYi3A1R" target="_blank" style="color: #8b0000; font-weight: bold; text-decoration: none; border: 2px solid #8b0000; padding: 8px 20px; border-radius: 8px;">Whatsapp Chanel</a>
+                <a href="https://www.facebook.com/profile.php?id=61584459515379" target="_blank" style="color: #8b0000; font-weight: bold; text-decoration: none; border: 2px solid #8b0000; padding: 8px 20px; border-radius: 8px;">Facebook</a>
+                <a href="https://youtube.com/@dpitcampuspannala?si=N-Ip4r4A8ctIfbfK" target="_blank" style="color: #8b0000; font-weight: bold; text-decoration: none; border: 2px solid #8b0000; padding: 8px 20px; border-radius: 8px;">Youtube</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const bgAudio = document.getElementById("avuruduAudio");
+        const musicIcon = document.getElementById("musicIcon");
+        const musicText = document.getElementById("musicText");
+
+        // --- About Logic ---
+        function openAbout() { document.getElementById("aboutModal").style.display = "flex"; }
+        function closeAbout() { document.getElementById("aboutModal").style.display = "none"; }
+
+        // --- Background Music Logic ---
+        window.addEventListener("load", () => {
+            const isPlaying = localStorage.getItem("musicPlaying") === "true";
+            const lastTime = localStorage.getItem("musicTime");
+            if (lastTime) bgAudio.currentTime = parseFloat(lastTime);
+            if (isPlaying) {
+                bgAudio.play().then(() => updateMusicUI(true)).catch(() => updateMusicUI(false));
+            }
+        });
+
+        bgAudio.addEventListener("timeupdate", () => localStorage.setItem("musicTime", bgAudio.currentTime));
+
+        function toggleMusic() {
+            if (bgAudio.paused) {
+                bgAudio.play();
+                localStorage.setItem("musicPlaying", "true");
+                updateMusicUI(true);
+            } else {
+                bgAudio.pause();
+                localStorage.setItem("musicPlaying", "false");
+                updateMusicUI(false);
+            }
+        }
+
+        function updateMusicUI(isPlaying) {
+            musicIcon.innerText = isPlaying ? "⏸️" : "🎵";
+            musicText.innerText = isPlaying ? "සංගීතය නවත්වන්න" : "සංගීතය ප්ලේ කරන්න";
+        }
+
+        window.onclick = function(event) {
+            if (event.target == document.getElementById("aboutModal")) closeAbout();
+        }
+    </script>
+</body>
+</html>

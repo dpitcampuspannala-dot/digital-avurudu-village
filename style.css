@@ -1,0 +1,76 @@
+/* මූලික සැකසුම් */
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    overflow: hidden;
+}
+
+/* පසුබිම් දර්ශනය */
+.hero-section {
+    background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), 
+                url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1920&q=80');
+    background-size: cover;
+    background-position: center;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: white;
+}
+
+/* ශීර්ෂ පාඨ */
+.title {
+    font-size: 4rem;
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 10px rgba(0,0,0,0.7);
+    color: #ff0000; /* රන්වන් පැහැය */
+}
+
+.subtitle {
+    font-size: 1.5rem;
+    margin-bottom: 30px;
+    background: rgba(139, 0, 0, 0.7); /* තද රතු පැහැය */
+    padding: 10px 20px;
+    border-radius: 50px;
+}
+
+/* ක්‍රීඩා මණ්ඩපයට පිවිසෙන බොත්තම */
+.enter-btn {
+    padding: 15px 40px;
+    margin: 10px;
+    font-size: 1.2rem;
+    background-color: #e67e22;
+    color: white;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: transform 0.3s, background-color 0.3s;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    font-weight: bold;
+}
+
+.enter-btn:hover {
+    background-color: #d35400;
+    transform: scale(1.1);
+}
+
+/* සැරසිලි ඇනිමේෂන් */
+.decoration {
+    position: absolute;
+    bottom: 20px;
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    font-size: 2rem;
+}
+
+/* ජංගම දුරකථන සඳහා සැකසුම් */
+@media (max-width: 600px) {
+    .title { font-size: 2.5rem; }
+    .subtitle { font-size: 1rem; }
+}

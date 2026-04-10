@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ගස්ලබු මිෂන් 10 - ඩිජිටල් අවුරුදු ගම්මානය</title>
+    <style>
+        body {
+            margin: 0; padding: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #fdf2e9;
+            text-align: center;
+            color: #333;
+        }
+        .container { max-width: 800px; margin: 20px auto; padding: 20px; }
+        
+        /* Mission Display */
+        .mission-status {
+            background: #8b0000;
+            color: white;
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .game-box {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            border: 3px solid #FFD700;
+        }
+
+        .papaya-img { font-size: 70px; margin-bottom: 10px; transition: transform 0.3s; }
+        .papaya-img:hover { transform: scale(1.1) rotate(5deg); }
+        
+        input[type="number"] {
+            padding: 12px;
+            width: 150px;
+            border-radius: 10px;
+            border: 2px solid #ddd;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            outline: none;
+        }
+
+        .btn {
+            background-color: #27ae60;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 50px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 1rem;
+            margin: 5px;
+        }
+
+        .btn:hover { background-color: #219150; }
+        .btn-next { background-color: #e67e22; display: none; }
+        .btn-reset { background-color: #c0392b; display: none; }
+
+        #message {
+            margin-top: 15px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            min-height: 40px;
+        }
+
+        .hint { color: #d35400; }
+        .success { color: #27ae60; }
+        .fail { color: #c0392b; }
+
+        .stats { margin-top: 15px; font-size: 0.9rem; color: #777; }
+        
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #8b0000;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .music-control {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #f1c40f;
+            color: #8b0000;
+            padding: 10px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            z-index: 1000;
+            transition: 0.3s;
+        }
+
+        .music-control:hover {
+            transform: scale(1.1);
+            background-color: #fff;
+        }
+
+        .music-text {
+            font-size: 14px;
+        }
+
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="mission-status">
+            <h2 id="missionTitle">Mission 1</h2>
+            <p id="missionDesc">පූරණය වෙමින්...</p>
+        </div>
+        
+        <div class="game-box">
+            <div class="papaya-img">🍈</div>
+            
+            <input type="number" id="userGuess" placeholder="අංකය..." min="1">
+            <br>
+            <button class="btn" id="guessBtn" onclick="checkGuess()">අනුමාන කරන්න</button>
+            <button class="btn btn-next" id="nextBtn" onclick="nextMission()">ඊළඟ Mission එක</button>
+            <button class="btn btn-reset" id="resetBtn" onclick="initGame()">නැවත උත්සාහ කරන්න</button>
+            
+            <div id="message"></div>
+            <div class="stats" id="stats">උත්සාහයන්: 0 | ඉතිරි වට: 0</div>
+        </div>
+
+
+
+        <audio id="avuruduAudio" loop>
+            <source src="avurudu_song.mp3" type="audio/mpeg">
+        </audio>
+
+        <div class="music-control" onclick="toggleMusic()">
+            <span id="musicIcon">🎵</span>
+            <span id="musicText">සංගීතය ප්ලේ කරන්න</span>
+        </div>
+
+        <a href="games.html" class="back-link">← ආපසු ක්‍රීඩා මණ්ඩපයට</a>
+    </div>
+
+    <script>
+        // --- Mission Data (Missions 10) ---
+        // difficulty increases: range expands, attempts decrease
+        const missions = [
+            { title: "Mission 1: කුඩා ගෙඩිය", desc: "වට 10ක් ඇතුළත 1-50 අතර ඇට ගණන අනුමාන කරන්න.", max: 50, attempts: 10 },
+            { title: "Mission 2: සාමාන්‍ය ගෙඩිය", desc: "වට 10ක් ඇතුළත 1-100 අතර ඇට ගණන අනුමාන කරන්න.", max: 100, attempts: 10 },
+            { title: "Mission 3: ටිකක් ලොකු ගෙඩිය", desc: "වට 9ක් ඇතුළත 1-150 අතර ඇට ගණන අනුමාන කරන්න.", max: 150, attempts: 9 },
+            { title: "Mission 4: පවුලේ ගෙඩිය", desc: "වට 9ක් ඇතුළත 1-200 අතර ඇට ගණන අනුමාන කරන්න.", max: 200, attempts: 9 },
+            { title: "Mission 5: උත්සව ගෙඩිය", desc: "වට 8ක් ඇතුළත 1-250 අතර ඇට ගණන අනුමාන කරන්න.", max: 250, attempts: 8 },
+            { title: "Mission 6: රජ ගෙඩිය", desc: "වට 8ක් ඇතුළත 1-300 අතර ඇට ගණන අනුමාන කරන්න.", max: 300, attempts: 8 },
+            { title: "Mission 7: අභියෝගාත්මක ගෙඩිය", desc: "වට 7ක් ඇතුළත 1-400 අතර ඇට ගණන අනුමාන කරන්න.", max: 400, attempts: 7 },
+            { title: "Mission 8: මහා ගෙඩිය", desc: "වට 7ක් ඇතුළත 1-500 අතර ඇට ගණන අනුමාන කරන්න.", max: 500, attempts: 7 },
+            { title: "Mission 9: විශේෂඥ ගෙඩිය", desc: "වට 6ක් ඇතුළත 1-750 අතර ඇට ගණන අනුමාන කරන්න.", max: 750, attempts: 6 },
+            { title: "Mission 10: අවසන් මහා ගෙඩිය", desc: "වට 5ක් ඇතුළත 1-1000 අතර ඇට ගණන අනුමාන කරන්න!", max: 1000, attempts: 5 }
+        ];
+
+        let currentMissionIdx = 0;
+        let targetSeeds, remainingAttempts, totalAttempts;
+
+        function initGame() {
+            const m = missions[currentMissionIdx];
+            // Generate random number between 1 and m.max
+            targetSeeds = Math.floor(Math.random() * m.max) + 1;
+            remainingAttempts = m.attempts;
+            totalAttempts = 0;
+            
+            document.getElementById('missionTitle').innerText = m.title;
+            document.getElementById('missionDesc').innerText = m.desc;
+            document.getElementById('stats').innerText = `උත්සාහයන්: 0 | ඉතිරි වට: ${remainingAttempts}`;
+            document.getElementById('message').innerHTML = "";
+            
+            // Hide/Show correct buttons
+            document.getElementById('nextBtn').style.display = "none";
+            document.getElementById('resetBtn').style.display = "none";
+            document.getElementById('guessBtn').style.display = "inline-block";
+            
+            // Reset input
+            const input = document.getElementById('userGuess');
+            input.value = "";
+            input.disabled = false;
+            input.placeholder = `1-${m.max}`;
+        }
+
+        function checkGuess() {
+            const inputEl = document.getElementById('userGuess');
+            const guess = parseInt(inputEl.value);
+            const msg = document.getElementById('message');
+            const m = missions[currentMissionIdx];
+            
+            if (isNaN(guess) || guess < 1 || guess > m.max) {
+                msg.innerHTML = `<span class="fail">කරුණාකර 1 ත් ${m.max} ත් අතර අංකයක් ඇතුළත් කරන්න!</span>`;
+                return;
+            }
+
+            totalAttempts++;
+            remainingAttempts--;
+
+            if (guess === targetSeeds) {
+                if (currentMissionIdx === missions.length - 1) {
+                    msg.innerHTML = `<span class="success">නියමයි මාර්ටා! 🏆 ඔයා අවසන් මහා මිෂන් එකත් ජයග්‍රහණය කළා! 🎉</span>`;
+                } else {
+                    msg.innerHTML = `<span class="success">සුභ පැතුම්! 🎉 Mission ${currentMissionIdx + 1} ජයග්‍රහණය කළා!</span>`;
+                }
+                endGame(true);
+            } else if (remainingAttempts === 0) {
+                msg.innerHTML = `<span class="fail">අපොයි! Mission එක අසාර්ථකයි. <br> නිවැරදි ඇට ගණන: ${targetSeeds}</span>`;
+                endGame(false);
+            } else {
+                let hint = guess < targetSeeds ? "වැඩියි" : "අඩුයි";
+                msg.innerHTML = `<span class="hint">වැරදියි, මීට වඩා ඇට ගණන ${hint}!</span>`;
+            }
+
+            document.getElementById('stats').innerText = `උත්සාහයන්: ${totalAttempts} | ඉතිරි වට: ${remainingAttempts}`;
+            inputEl.value = ""; // clear input for next guess
+        }
+
+        function endGame(isWin) {
+            document.getElementById('userGuess').disabled = true;
+            document.getElementById('guessBtn').style.display = "none";
+            
+            if (isWin) {
+                // If not the last mission, show Next button
+                if (currentMissionIdx < missions.length - 1) {
+                    document.getElementById('nextBtn').style.display = "inline-block";
+                }
+            } else {
+                // Show Reset button to retry current mission
+                document.getElementById('resetBtn').style.display = "inline-block";
+            }
+        }
+
+        function nextMission() {
+            if (currentMissionIdx < missions.length - 1) {
+                currentMissionIdx++;
+                initGame();
+            }
+        }
+
+        // Start the game on load
+        initGame();
+
+        /* --- JavaScript Logic --- */
+        const audio = document.getElementById("avuruduAudio");
+        const musicIcon = document.getElementById("musicIcon");
+        const musicText = document.getElementById("musicText");
+
+        // 1. පේජ් එක ලෝඩ් වෙනකොට කලින් තත්වය බලමු
+        window.addEventListener("load", () => {
+            const isPlaying = localStorage.getItem("musicPlaying") === "true";
+            const lastTime = localStorage.getItem("musicTime");
+
+            if (lastTime) {
+                audio.currentTime = parseFloat(lastTime);
+            }
+
+            if (isPlaying) {
+                // බ්‍රවුසරය play එක block කළහොත් catch එක හරහා handle කරයි
+                audio.play().then(() => {
+                    updateUI(true);
+                }).catch(() => {
+                    console.log("Autoplay blocked. Waiting for user interaction.");
+                    localStorage.setItem("musicPlaying", "false");
+                    updateUI(false);
+                });
+            }
+        });
+
+        // 2. හැම තත්පරයකම සින්දුවේ වෙලාව සේව් කරගන්නවා
+        audio.addEventListener("timeupdate", () => {
+            localStorage.setItem("musicTime", audio.currentTime);
+        });
+
+        // 3. ප්ලේ/පෝස් කරන ෆන්ක්ෂන් එක
+        function toggleMusic() {
+            if (audio.paused) {
+                audio.play();
+                localStorage.setItem("musicPlaying", "true");
+                updateUI(true);
+            } else {
+                audio.pause();
+                localStorage.setItem("musicPlaying", "false");
+                updateUI(false);
+            }
+        }
+
+        // 4. බටන් එකේ පෙනුම වෙනස් කරන එක
+        function updateUI(isPlaying) {
+            if (isPlaying) {
+                musicIcon.innerText = "⏸️";
+                musicText.innerText = "සංගීතය නවත්වන්න";
+            } else {
+                musicIcon.innerText = "🎵";
+                musicText.innerText = "සංගීතය ප්ලේ කරන්න";
+            }
+        }
+
+        // 5. පේජ් එකෙන් පිටවන විට අවසන් තත්පරය සේව් කරගන්න
+        window.addEventListener("beforeunload", () => {
+            localStorage.setItem("musicTime", audio.currentTime);
+            localStorage.setItem("musicPlaying", !audio.paused);
+        });
+
+
+    </script>
+</body>
+</html>

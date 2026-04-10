@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>බිත්තර ඇල්ලීම Pro - ඩිජිටල් අවුරුදු ගම්මානය</title>
+    <style>
+        body { margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; background-color: #fdf2e9; text-align: center; color: #333; overflow: hidden; }
+        .container { max-width: 600px; margin: 0 auto; padding: 15px; position: relative; height: 100vh; display: flex; flex-direction: column; }
+        
+        /* Menu Screen */
+        #menuScreen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #fdf2e9; z-index: 20; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .menu-title { color: #8b0000; font-size: 2.5rem; margin-bottom: 30px; }
+        
+        /* Mission Header */
+        .game-header { background: #8b0000; color: white; padding: 10px; border-radius: 15px; margin-bottom: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); display: none; }
+        
+        #gameArea { flex-grow: 1; background-color: #eafaf1; border: 3px solid #FFD700; border-radius: 20px; position: relative; overflow: hidden; cursor: crosshair; box-shadow: inset 0 0 20px rgba(0,0,0,0.1); }
+        
+        .score-board { display: none; justify-content: space-around; background: white; padding: 8px; border-radius: 10px; margin-bottom: 10px; font-weight: bold; }
+        #score { color: #27ae60; }
+        #missed { color: #c0392b; }
+
+        #basket { width: 80px; height: 50px; position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); font-size: 55px; pointer-events: none; }
+        .egg { width: 30px; height: 40px; position: absolute; font-size: 30px; }
+        
+        /* Overlays */
+        .overlay { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); color: white; border-radius: 17px; flex-direction: column; align-items: center; justify-content: center; z-index: 10; padding: 20px; box-sizing: border-box; }
+        
+        .btn { background-color: #27ae60; color: white; padding: 15px 40px; border: none; border-radius: 50px; font-weight: bold; cursor: pointer; font-size: 1.2rem; margin: 10px; text-decoration: none; width: 220px; }
+        .btn-orange { background-color: #e67e22; }
+        .btn-red { background-color: #8b0000; }
+        .btn:hover { opacity: 0.9; transform: scale(1.05); }
+
+        .back-link { color: #8b0000; text-decoration: none; font-weight: bold; margin-bottom: 5px; display: inline-block; }
+
+        .music-control {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #f1c40f;
+            color: #8b0000;
+            padding: 10px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            z-index: 1000;
+            transition: 0.3s;
+        }
+
+        .music-control:hover {
+            transform: scale(1.1);
+            background-color: #fff;
+        }
+
+        .music-text {
+            font-size: 14px;
+        }
+
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div id="menuScreen">
+        <h1 class="menu-title">බිත්තර ඇල්ලීම</h1>
+        <button class="btn" onclick="startMode('missions')">Missions 10</button>
+        <button class="btn btn-orange" onclick="startMode('unlimited')">Unlimited Play</button>
+        <br>
+        <a href="games.html" class="back-link">← ආපසු ක්‍රීඩා මණ්ඩපයට</a>
+    </div>
+
+    <div class="game-header" id="gameHeader">
+        <h2 id="mTitle">Mission Mode</h2>
+        <p id="mDesc">බිත්තර 5ක් අල්ලාගන්න.</p>
+    </div>
+
+    <div class="score-board" id="scoreBoard">
+        <div>ලකුණු: <span id="score">0</span></div>
+        <div id="targetContainer">ඉලක්කය: <span id="target">0</span></div>
+        <div>මගහැරුණු: <span id="missed">0</span>/5</div>
+    </div>
+
+    <div id="gameArea">
+        <div id="basket">🗑️</div>
+        
+        <div id="statusOverlay" class="overlay">
+            <h2 id="statusTitle">විශිෂ්ටයි!</h2>
+            <p id="statusMsg">ඔබ මෙම මට්ටම ජයග්‍රහණය කළා.</p>
+            <button class="btn" id="actionBtn" onclick="handleAction()">ඊළඟ Mission එක</button>
+            <button class="btn btn-red" onclick="exitToMenu()">Menu එකට යන්න</button>
+        </div>
+    </div>
+</div>
+
+
+<audio id="avuruduAudio" loop>
+        <source src="avurudu_song.mp3" type="audio/mpeg">
+    </audio>
+
+    <div class="music-control" onclick="toggleMusic()">
+        <span id="musicIcon">🎵</span>
+        <span id="musicText">සංගීතය ප්ලේ කරන්න</span>
+    </div>
+
+<script>
+    const missions = [
+        { title: "Mission 1", target: 5, speed: 3, interval: 1500 },
+        { title: "Mission 2", target: 10, speed: 3.5, interval: 1300 },
+        { title: "Mission 3", target: 15, speed: 4, interval: 1100 },
+        { title: "Mission 4", target: 20, speed: 4.5, interval: 1000 },
+        { title: "Mission 5", target: 25, speed: 5, interval: 950 },
+        { title: "Mission 6", target: 30, speed: 5.5, interval: 900 },
+        { title: "Mission 7", target: 40, speed: 6, interval: 850 },
+        { title: "Mission 8", target: 50, speed: 6.5, interval: 800 },
+        { title: "Mission 9", target: 60, speed: 7, interval: 750 },
+        { title: "Mission 10", target: 80, speed: 8, interval: 650 }
+    ];
+
+    let currentMode = ''; // 'missions' or 'unlimited'
+    let currentMIdx = 0;
+    let score = 0, missed = 0;
+    let gameActive = false;
+    let eggInterval, gameLoop;
+    let eggs = [];
+    let currentSpeed = 3;
+    let currentSpawnRate = 1500;
+    const maxMissed = 5;
+
+    function startMode(mode) {
+        currentMode = mode;
+        document.getElementById('menuScreen').style.display = 'none';
+        document.getElementById('gameHeader').style.display = 'block';
+        document.getElementById('scoreBoard').style.display = 'flex';
+        
+        if (mode === 'missions') {
+            currentMIdx = 0;
+            document.getElementById('targetContainer').style.display = 'block';
+            initMission();
+        } else {
+            document.getElementById('targetContainer').style.display = 'none';
+            document.getElementById('mTitle').innerText = "Unlimited Mode";
+            document.getElementById('mDesc').innerText = "හැකි උපරිම ලකුණු ලබාගන්න!";
+            initUnlimited();
+        }
+    }
+
+    function initMission() {
+        const m = missions[currentMIdx];
+        score = 0; missed = 0;
+        currentSpeed = m.speed;
+        currentSpawnRate = m.interval;
+        setupGameState(m.title, `බිත්තර ${m.target}ක් අල්ලාගන්න.`, m.target);
+    }
+
+    function initUnlimited() {
+        score = 0; missed = 0;
+        currentSpeed = 3;
+        currentSpawnRate = 1500;
+        setupGameState("Unlimited Mode", "බිත්තර 5ක් වැටෙන්න නොදී අල්ලාගන්න.", "∞");
+    }
+
+    function setupGameState(title, desc, target) {
+        eggs.forEach(e => e.remove());
+        eggs = [];
+        gameActive = true;
+        document.getElementById('mTitle').innerText = title;
+        document.getElementById('mDesc').innerText = desc;
+        document.getElementById('score').innerText = score;
+        document.getElementById('target').innerText = target;
+        document.getElementById('missed').innerText = missed;
+        document.getElementById('statusOverlay').style.display = 'none';
+        
+        clearInterval(eggInterval);
+        cancelAnimationFrame(gameLoop);
+        eggInterval = setInterval(createEgg, currentSpawnRate);
+        gameLoop = requestAnimationFrame(updateGame);
+    }
+
+    function createEgg() {
+        if (!gameActive) return;
+        const egg = document.createElement('div');
+        egg.className = 'egg';
+        egg.innerText = '🥚';
+        const randomX = Math.floor(Math.random() * (document.getElementById('gameArea').clientWidth - 60)) + 30;
+        egg.style.left = randomX + 'px';
+        egg.style.top = '-50px';
+        document.getElementById('gameArea').appendChild(egg);
+        eggs.push(egg);
+    }
+
+    function updateGame() {
+        if (!gameActive) return;
+        const basketRect = document.getElementById('basket').getBoundingClientRect();
+        const areaRect = document.getElementById('gameArea').getBoundingClientRect();
+
+        for (let i = eggs.length - 1; i >= 0; i--) {
+            const egg = eggs[i];
+            let top = parseFloat(egg.style.top) + currentSpeed;
+            egg.style.top = top + 'px';
+            
+            const eggRect = egg.getBoundingClientRect();
+
+            // Catching
+            if (eggRect.bottom > basketRect.top && eggRect.right > basketRect.left && eggRect.left < basketRect.right && eggRect.top < basketRect.bottom) {
+                score++;
+                document.getElementById('score').innerText = score;
+                egg.remove();
+                eggs.splice(i, 1);
+                
+                if (currentMode === 'missions' && score >= missions[currentMIdx].target) {
+                    winMission();
+                    return;
+                }
+                
+                if (currentMode === 'unlimited') {
+                    // Unlimited වලදී ලකුණු 10කට වරක් අමාරු කරනවා
+                    if (score % 10 === 0) {
+                        currentSpeed += 0.3;
+                        if (currentSpawnRate > 500) {
+                            currentSpawnRate -= 50;
+                            clearInterval(eggInterval);
+                            eggInterval = setInterval(createEgg, currentSpawnRate);
+                        }
+                    }
+                }
+                continue;
+            }
+
+            // Missing
+            if (eggRect.bottom > areaRect.bottom - 10) {
+                missed++;
+                document.getElementById('missed').innerText = missed;
+                egg.innerText = '💥';
+                eggs.splice(i, 1);
+                setTimeout(() => egg.remove(), 400);
+
+                if (missed >= maxMissed) {
+                    gameOver();
+                    return;
+                }
+            }
+        }
+        gameLoop = requestAnimationFrame(updateGame);
+    }
+
+    function winMission() {
+        gameActive = false;
+        clearInterval(eggInterval);
+        const overlay = document.getElementById('statusOverlay');
+        const title = document.getElementById('statusTitle');
+        const btn = document.getElementById('actionBtn');
+        
+        title.innerText = "විශිෂ්ටයි!";
+        title.style.color = "#2ecc71";
+        
+        if (currentMIdx < missions.length - 1) {
+            document.getElementById('statusMsg').innerText = `Mission ${currentMIdx + 1} සාර්ථකයි.`;
+            btn.innerText = "ඊළඟ Mission එක";
+            btn.style.display = "inline-block";
+        } else {
+            document.getElementById('statusMsg').innerText = "ඔබ සියලුම මිෂන් ජයග්‍රහණය කළා! 🏆";
+            btn.style.display = "none";
+        }
+        overlay.style.display = 'flex';
+    }
+
+    function gameOver() {
+        gameActive = false;
+        clearInterval(eggInterval);
+        const overlay = document.getElementById('statusOverlay');
+        const title = document.getElementById('statusTitle');
+        const btn = document.getElementById('actionBtn');
+        
+        title.innerText = "අපොයි!";
+        title.style.color = "#e74c3c";
+        document.getElementById('statusMsg').innerText = (currentMode === 'unlimited') ? `ඔබේ ලකුණු: ${score}` : "බිත්තර 5ක්ම බිඳුණා. Mission එක අසාර්ථකයි.";
+        btn.innerText = "නැවත උත්සාහ කරන්න";
+        btn.style.display = "inline-block";
+        overlay.style.display = 'flex';
+    }
+
+    function handleAction() {
+        const title = document.getElementById('statusTitle').innerText;
+        if (title === "විශිෂ්ටයි!") {
+            currentMIdx++;
+            initMission();
+        } else {
+            if (currentMode === 'missions') initMission();
+            else initUnlimited();
+        }
+    }
+
+    function exitToMenu() {
+        gameActive = false;
+        clearInterval(eggInterval);
+        cancelAnimationFrame(gameLoop);
+        document.getElementById('menuScreen').style.display = 'flex';
+        document.getElementById('gameHeader').style.display = 'none';
+        document.getElementById('scoreBoard').style.display = 'none';
+        document.getElementById('statusOverlay').style.display = 'none';
+    }
+
+    // Basket Controls
+    function move(e) {
+        if (!gameActive) return;
+        let x = (e.type.includes('touch')) ? e.touches[0].clientX : e.clientX;
+        let rect = document.getElementById('gameArea').getBoundingClientRect();
+        let relX = x - rect.left;
+        if (relX < 40) relX = 40;
+        if (relX > rect.width - 40) relX = rect.width - 40;
+        document.getElementById('basket').style.left = relX + 'px';
+    }
+
+    document.getElementById('gameArea').addEventListener('mousemove', move);
+    document.getElementById('gameArea').addEventListener('touchmove', move, {passive: true});
+
+
+    /* --- JavaScript Logic --- */
+        const audio = document.getElementById("avuruduAudio");
+        const musicIcon = document.getElementById("musicIcon");
+        const musicText = document.getElementById("musicText");
+
+        // 1. පේජ් එක ලෝඩ් වෙනකොට කලින් තත්වය බලමු
+        window.addEventListener("load", () => {
+            const isPlaying = localStorage.getItem("musicPlaying") === "true";
+            const lastTime = localStorage.getItem("musicTime");
+
+            if (lastTime) {
+                audio.currentTime = parseFloat(lastTime);
+            }
+
+            if (isPlaying) {
+                // බ්‍රවුසරය play එක block කළහොත් catch එක හරහා handle කරයි
+                audio.play().then(() => {
+                    updateUI(true);
+                }).catch(() => {
+                    console.log("Autoplay blocked. Waiting for user interaction.");
+                    localStorage.setItem("musicPlaying", "false");
+                    updateUI(false);
+                });
+            }
+        });
+
+        // 2. හැම තත්පරයකම සින්දුවේ වෙලාව සේව් කරගන්නවා
+        audio.addEventListener("timeupdate", () => {
+            localStorage.setItem("musicTime", audio.currentTime);
+        });
+
+        // 3. ප්ලේ/පෝස් කරන ෆන්ක්ෂන් එක
+        function toggleMusic() {
+            if (audio.paused) {
+                audio.play();
+                localStorage.setItem("musicPlaying", "true");
+                updateUI(true);
+            } else {
+                audio.pause();
+                localStorage.setItem("musicPlaying", "false");
+                updateUI(false);
+            }
+        }
+
+        // 4. බටන් එකේ පෙනුම වෙනස් කරන එක
+        function updateUI(isPlaying) {
+            if (isPlaying) {
+                musicIcon.innerText = "⏸️";
+                musicText.innerText = "සංගීතය නවත්වන්න";
+            } else {
+                musicIcon.innerText = "🎵";
+                musicText.innerText = "සංගීතය ප්ලේ කරන්න";
+            }
+        }
+
+        // 5. පේජ් එකෙන් පිටවන විට අවසන් තත්පරය සේව් කරගන්න
+        window.addEventListener("beforeunload", () => {
+            localStorage.setItem("musicTime", audio.currentTime);
+            localStorage.setItem("musicPlaying", !audio.paused);
+        });
+
+</script>
+</body>
+</html>

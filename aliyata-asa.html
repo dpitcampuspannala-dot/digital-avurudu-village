@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>අලියාට ඇස තැබීම - ඩිජිටල් අවුරුදු</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f1f8e9;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .header-info {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 15px 40px;
+            border-radius: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            border: 2px solid #4caf50;
+        }
+
+        #game-area {
+            position: relative;
+            width: 600px;
+            height: 450px;
+            background-color: #ffffff;
+            border: 10px solid #5d4037;
+            border-radius: 25px;
+            cursor: crosshair;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* 🐘 හෑඩි දැඩි අලියා (Strong SVG Elephant) */
+        #elephant-svg {
+            width: 95%;
+            height: auto;
+            transition: opacity 0.5s;
+        }
+
+        #blindfold {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #121212;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            color: #ffca28;
+            font-size: 1.8rem;
+            font-weight: bold;
+            z-index: 10;
+            text-align: center;
+        }
+
+        /* ඇස් සලකුණු */
+        .eye {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: none;
+            z-index: 5;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
+
+        #target-eye { background: #ff1744; border: 3px solid white; } 
+        #player-eye { background: #212121; border: 3px solid white; } 
+
+        .controls { margin-top: 25px; display: flex; gap: 20px; }
+        .btn { 
+            padding: 15px 35px; 
+            font-size: 1.2rem; 
+            border: none; 
+            border-radius: 50px; 
+            cursor: pointer; 
+            font-weight: bold; 
+            color: white; 
+            box-shadow: 0 5px #777;
+        }
+        .btn:active { transform: translateY(3px); box-shadow: 0 2px #777; }
+        
+        .start-btn { background-color: #ef6c00; }
+        #next-btn { display: none; background-color: #2e7d32; }
+        
+        .back-link { margin-top: 25px; color: #2e7d32; text-decoration: none; font-weight: bold; }
+
+        .music-control {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #f1c40f;
+            color: #8b0000;
+            padding: 10px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            z-index: 1000;
+            transition: 0.3s;
+        }
+
+        .music-control:hover {
+            transform: scale(1.1);
+            background-color: #fff;
+        }
+
+        .music-text {
+            font-size: 14px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="header-info">
+        <h2 id="mission-title" style="margin:0; color:#2e7d32;">මිෂන් 1</h2>
+        <p id="message" style="margin:5px 0 0 0;">අලියාගේ ඇස තිබිය යුතු තැන හොඳින් බලාගන්න!</p>
+    </div>
+
+    <div id="game-area" onclick="placeEye(event)">
+        <svg id="elephant-svg" viewBox="0 0 600 450" xmlns="http://www.w3.org/2000/svg">
+            <rect x="300" y="320" width="60" height="90" rx="10" fill="#7f8c8d" />
+            <rect x="420" y="320" width="60" height="90" rx="10" fill="#7f8c8d" />
+            <ellipse cx="400" cy="250" rx="160" ry="110" fill="#95a5a6" />
+            <circle cx="220" cy="200" r="95" fill="#95a5a6" />
+            <ellipse cx="300" cy="180" rx="70" ry="100" fill="#7f8c8d" />
+            <path d="M140,230 Q40,230 40,320 Q40,380 90,370" fill="none" stroke="#95a5a6" stroke-width="35" stroke-linecap="round" />
+            <path d="M550,230 Q580,230 580,280" fill="none" stroke="#7f8c8d" stroke-width="6" />
+        </svg>
+
+        <div id="blindfold">දැන් මතකයෙන් ඇස තියන්න! 🙈</div>
+        
+        <div id="target-eye" class="eye"></div>
+        <div id="player-eye" class="eye"></div>
+    </div>
+
+    <div class="controls">
+        <button id="start-btn" class="btn start-btn" onclick="startBlindfold()">ඇස තැබීම ආරම්භ කරන්න</button>
+        <button id="next-btn" class="btn" onclick="startNextMission()">ඊළඟ මිෂන් එකට යන්න →</button>
+    </div>
+
+
+    <audio id="avuruduAudio" loop>
+        <source src="avurudu_song.mp3" type="audio/mpeg">
+    </audio>
+
+    <div class="music-control" onclick="toggleMusic()">
+        <span id="musicIcon">🎵</span>
+        <span id="musicText">සංගීතය ප්ලේ කරන්න</span>
+    </div>
+
+    <a href="games.html" class="back-link">← ආපසු මණ්ඩපයට</a>
+
+    <script>
+        let currentMission = 1;
+        let canPlace = false;
+
+        // 🎯 ඇස තිබිය යුතු නිවැරදි ස්ථානය - දැන් තවත් ඉහළට (RealEyeY = 155)
+        const realEyeX = 180; 
+        const realEyeY = 155; 
+
+        const missions = [
+            { previewTime: 5000, tolerance: 35 },
+            { previewTime: 4000, tolerance: 30 },
+            { previewTime: 3000, tolerance: 25 },
+            { previewTime: 2500, tolerance: 20 },
+            { previewTime: 2000, tolerance: 18 },
+            { previewTime: 1500, tolerance: 15 },
+            { previewTime: 1000, tolerance: 12 },
+            { previewTime: 800, tolerance: 10 },
+            { previewTime: 600, tolerance: 8 },
+            { previewTime: 400, tolerance: 6 }
+        ];
+
+        function startBlindfold() {
+            const elephant = document.getElementById('elephant-svg');
+            const blindfold = document.getElementById('blindfold');
+            const startBtn = document.getElementById('start-btn');
+            
+            startBtn.style.visibility = "hidden";
+            document.getElementById('message').innerText = "අලියාව හොඳින් මතක තබා ගන්න...";
+
+            setTimeout(() => {
+                elephant.style.opacity = "0";
+                blindfold.style.display = "flex";
+                canPlace = true;
+                document.getElementById('message').innerText = "දැන් මතකයෙන් ඇස තියන්න!";
+            }, missions[currentMission - 1].previewTime);
+        }
+
+        function placeEye(event) {
+            if (!canPlace) return;
+
+            const rect = document.getElementById('game-area').getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+
+            const playerEye = document.getElementById('player-eye');
+            playerEye.style.left = (x - 10) + "px";
+            playerEye.style.top = (y - 10) + "px";
+            playerEye.style.display = "block";
+
+            const targetEye = document.getElementById('target-eye');
+            targetEye.style.left = (realEyeX - 10) + "px";
+            targetEye.style.top = (realEyeY - 10) + "px";
+            targetEye.style.display = "block";
+
+            document.getElementById('elephant-svg').style.opacity = "1";
+            document.getElementById('blindfold').style.display = "none";
+            
+            canPlace = false;
+            checkResult(x, y);
+        }
+
+        function checkResult(px, py) {
+            const distance = Math.sqrt(Math.pow(px - realEyeX, 2) + Math.pow(py - realEyeY, 2));
+            const tolerance = missions[currentMission - 1].tolerance;
+
+            if (distance <= tolerance) {
+                document.getElementById('message').innerText = "නියමයි! ඔබ ඇස තැබුවේ හරියටම නිවැරදි තැනටයි! 🎉";
+                document.getElementById('message').style.color = "#2e7d32";
+                if (currentMission < 10) {
+                    document.getElementById('next-btn').style.display = "block";
+                } else {
+                    document.getElementById('message').innerText = "සුභ පැතුම්! ඔබ අලියාට ඇස තැබීමේ ශූරයෙක්! 🏆";
+                }
+            } else {
+                document.getElementById('message').innerText = "අපොයි, ඇස තැබූ තැන වැරදියි! ❌";
+                document.getElementById('message').style.color = "#d32f2f";
+                setTimeout(resetMission, 2500);
+            }
+        }
+
+        function resetMission() {
+            document.getElementById('player-eye').style.display = "none";
+            document.getElementById('target-eye').style.display = "none";
+            document.getElementById('start-btn').style.visibility = "visible";
+            document.getElementById('message').innerText = "නැවත උත්සාහ කරන්න!";
+            document.getElementById('message').style.color = "black";
+            canPlace = false;
+        }
+
+        function startNextMission() {
+            currentMission++;
+            document.getElementById('mission-title').innerText = "මිෂන් " + currentMission;
+            document.getElementById('next-btn').style.display = "none";
+            resetMission();
+        }
+
+
+        /* --- JavaScript Logic --- */
+        const audio = document.getElementById("avuruduAudio");
+        const musicIcon = document.getElementById("musicIcon");
+        const musicText = document.getElementById("musicText");
+
+        // 1. පේජ් එක ලෝඩ් වෙනකොට කලින් තත්වය බලමු
+        window.addEventListener("load", () => {
+            const isPlaying = localStorage.getItem("musicPlaying") === "true";
+            const lastTime = localStorage.getItem("musicTime");
+
+            if (lastTime) {
+                audio.currentTime = parseFloat(lastTime);
+            }
+
+            if (isPlaying) {
+                // බ්‍රවුසරය play එක block කළහොත් catch එක හරහා handle කරයි
+                audio.play().then(() => {
+                    updateUI(true);
+                }).catch(() => {
+                    console.log("Autoplay blocked. Waiting for user interaction.");
+                    localStorage.setItem("musicPlaying", "false");
+                    updateUI(false);
+                });
+            }
+        });
+
+        // 2. හැම තත්පරයකම සින්දුවේ වෙලාව සේව් කරගන්නවා
+        audio.addEventListener("timeupdate", () => {
+            localStorage.setItem("musicTime", audio.currentTime);
+        });
+
+        // 3. ප්ලේ/පෝස් කරන ෆන්ක්ෂන් එක
+        function toggleMusic() {
+            if (audio.paused) {
+                audio.play();
+                localStorage.setItem("musicPlaying", "true");
+                updateUI(true);
+            } else {
+                audio.pause();
+                localStorage.setItem("musicPlaying", "false");
+                updateUI(false);
+            }
+        }
+
+        // 4. බටන් එකේ පෙනුම වෙනස් කරන එක
+        function updateUI(isPlaying) {
+            if (isPlaying) {
+                musicIcon.innerText = "⏸️";
+                musicText.innerText = "සංගීතය නවත්වන්න";
+            } else {
+                musicIcon.innerText = "🎵";
+                musicText.innerText = "සංගීතය ප්ලේ කරන්න";
+            }
+        }
+
+        // 5. පේජ් එකෙන් පිටවන විට අවසන් තත්පරය සේව් කරගන්න
+        window.addEventListener("beforeunload", () => {
+            localStorage.setItem("musicTime", audio.currentTime);
+            localStorage.setItem("musicPlaying", !audio.paused);
+        });
+    </script>
+</body>
+</html>

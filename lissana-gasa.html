@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ලිස්සන ගස - මිෂන් 10 (Fixed)</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #e0f7fa;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .header-info {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px 30px;
+            border-radius: 20px;
+            margin-bottom: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        #game-container {
+            position: relative;
+            width: 300px;
+            height: 450px;
+            background: linear-gradient(#81d4fa, #fff);
+            border-bottom: 15px solid #4caf50;
+            display: flex;
+            justify-content: center;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        #pole {
+            width: 25px;
+            height: 100%;
+            background: linear-gradient(to right, #5d4037, #795548, #5d4037);
+            position: relative;
+        }
+
+        #flag { 
+            position: absolute; 
+            top: 5px; 
+            left: 15px; 
+            font-size: 45px; 
+            z-index: 2;
+        }
+
+        #player {
+            position: absolute;
+            bottom: 0px; 
+            left: -12px;
+            font-size: 45px;
+            /* Animation එක 0.05s ට අඩු කළා වේගවත් ප්‍රතිචාරයක් ලැබෙන්න */
+            transition: bottom 0.05s ease-out; 
+            z-index: 5;
+        }
+
+        .controls {
+            margin-top: 25px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        #climb-btn {
+            padding: 15px 60px;
+            font-size: 1.8rem;
+            background-color: #d35400;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 6px #a04000;
+            transition: 0.1s;
+        }
+
+        #climb-btn:active { 
+            transform: translateY(4px); 
+            box-shadow: 0 2px #a04000; 
+        }
+
+        #next-btn {
+            display: none;
+            padding: 12px 40px;
+            font-size: 1.2rem;
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .back-link { margin-top: 20px; color: #8b0000; text-decoration: none; font-weight: bold; border-bottom: 2px solid #8b0000;}
+
+        /* Music Styles */
+        .music-control {
+            position: fixed; bottom: 20px; right: 20px;
+            background: #f1c40f; padding: 10px 20px; border-radius: 50px;
+            cursor: pointer; font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header-info">
+        <h2 id="mission-title">Mission 1</h2>
+        <p id="message">කොඩිය අල්ලන්න! (වේගයෙන් නගින්න)</p>
+    </div>
+
+    <div id="game-container">
+        <div id="pole">
+            <div id="flag">🚩</div> 
+            <div id="player">🧗</div> 
+        </div>
+    </div>
+
+    <div class="controls">
+        <button id="climb-btn">නගින්න! 👆</button>
+        <button id="next-btn" onclick="startNextMission()">ඊළඟ මිෂන් එකට යන්න →</button>
+    </div>
+
+    <audio id="avuruduAudio" loop>
+        <source src="avurudu_song.mp3" type="audio/mpeg">
+    </audio>
+
+    <div class="music-control" onclick="toggleMusic()">
+        <span id="musicIcon">🎵</span>
+        <span id="musicText">සංගීතය ප්ලේ කරන්න</span>
+    </div>
+
+    <a href="games.html" class="back-link">← ආපසු මණ්ඩපයට</a>
+
+    <script>
+        let currentMission = 1;
+        let position = 0;
+        let isWin = false;
+        
+        // ප්ලේයර් කොඩිය ගාවටම යන උස (Container එක 450px නිසා 380px හොඳයි)
+        const TOUCH_POINT = 380; 
+
+        // ලිස්සන වේගයන් (මිෂන් එකෙන් එකට වැඩි වේ)
+        const missions = [
+            { slip: 3 }, { slip: 5 }, { slip: 8 }, 
+            { slip: 11 }, { slip: 14 }, { slip: 17 }, 
+            { slip: 20 }, { slip: 23 }, { slip: 26 }, 
+            { slip: 30 } // Mission 10
+        ];
+
+        const player = document.getElementById('player');
+        const message = document.getElementById('message');
+        const missionTitle = document.getElementById('mission-title');
+        const nextBtn = document.getElementById('next-btn');
+        const climbBtn = document.getElementById('climb-btn');
+
+        // ප්ලේයර් නගින වේගය (නගින වේගය ලිස්සන වේගයට වඩා වැඩියෙන් තැබිය යුතුයි)
+        const CLIMB_POWER = 35; 
+
+        climbBtn.addEventListener('click', () => {
+            if (isWin) return;
+            position += CLIMB_POWER; 
+            if (position > TOUCH_POINT) position = TOUCH_POINT;
+            updateUI();
+            checkCollision(); 
+        });
+
+        // ලිස්සන Logic එක (Gravity)
+        setInterval(() => {
+            if (!isWin && position > 0) {
+                position -= missions[currentMission - 1].slip;
+                updateUI();
+            }
+        }, 100);
+
+        function updateUI() {
+            if (position < 0) position = 0;
+            player.style.bottom = position + "px";
+        }
+
+        function checkCollision() {
+            if (position >= TOUCH_POINT) {
+                isWin = true;
+                player.style.transition = "none"; 
+                player.style.bottom = TOUCH_POINT + "px"; 
+
+                message.innerText = "ජයග්‍රහණයයි! ඔබ කොඩිය අල්ලා ගත්තා! 🚩";
+                message.style.color = "#27ae60";
+                climbBtn.style.display = "none";
+                
+                if(currentMission < 10) {
+                    nextBtn.style.display = "block";
+                } else {
+                    message.innerText = "සියලුම මිෂන් අවසන්! ඔබ ලිස්සන ගසේ වීරයෙක්! 🏆";
+                }
+            }
+        }
+
+        function startNextMission() {
+            currentMission++;
+            position = 0;
+            isWin = false;
+            
+            player.style.transition = "bottom 0.05s ease-out"; 
+            missionTitle.innerText = "Mission " + currentMission;
+            message.innerText = "කොඩිය අල්ලන්න! (ලිස්සන වේගය වැඩියි)";
+            message.style.color = "black";
+            nextBtn.style.display = "none";
+            climbBtn.style.display = "block";
+            updateUI();
+        }
+
+        // --- Music Controls ---
+        const audio = document.getElementById("avuruduAudio");
+        const musicIcon = document.getElementById("musicIcon");
+        const musicText = document.getElementById("musicText");
+
+        window.addEventListener("load", () => {
+            const isPlaying = localStorage.getItem("musicPlaying") === "true";
+            const lastTime = localStorage.getItem("musicTime");
+            if (lastTime) audio.currentTime = parseFloat(lastTime);
+            if (isPlaying) {
+                audio.play().then(() => updateUI_Music(true)).catch(() => {});
+            }
+        });
+
+        audio.addEventListener("timeupdate", () => {
+            localStorage.setItem("musicTime", audio.currentTime);
+        });
+
+        function toggleMusic() {
+            if (audio.paused) {
+                audio.play();
+                localStorage.setItem("musicPlaying", "true");
+                updateUI_Music(true);
+            } else {
+                audio.pause();
+                localStorage.setItem("musicPlaying", "false");
+                updateUI_Music(false);
+            }
+        }
+
+        function updateUI_Music(isPlaying) {
+            musicIcon.innerText = isPlaying ? "⏸️" : "🎵";
+            musicText.innerText = isPlaying ? "සංගීතය නවත්වන්න" : "සංගීතය ප්ලේ කරන්න";
+        }
+    </script>
+</body>
+</html>

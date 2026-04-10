@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>කණා මුට්ටි බිඳීම - ඩිජිටල් අවුරුදු</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #fce4ec;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .header-info {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px 30px;
+            border-radius: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        #game-area {
+            position: relative;
+            width: 400px;
+            height: 500px;
+            background: linear-gradient(#e3f2fd, #fff);
+            border-bottom: 20px solid #7ed321;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        .pot-container {
+            position: absolute;
+            top: 150px;
+            width: 100%;
+            display: flex;
+            justify-content: space-around;
+            padding: 0 20px;
+            box-sizing: border-box;
+        }
+
+        .pot-wrapper {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .pot { font-size: 50px; z-index: 1; }
+
+        .falling-content {
+            position: absolute;
+            top: 40px;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            display: none;
+            z-index: 0;
+        }
+
+        @keyframes fallDown {
+            0% { transform: translateY(0) scale(1); opacity: 1; }
+            100% { transform: translateY(300px) scale(2.5); opacity: 0; }
+        }
+
+        /* ප්ලේයර් සැකසුම් */
+        #player-wrapper {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 100px;
+            transition: left 0.15s ease-out;
+        }
+
+        #character-body {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* ළමයාගේ ඉමෝජිය */
+        #character {
+            font-size: 75px;
+            z-index: 2; /* ළමයා දෙවැනියට */
+            transition: transform 0.2s;
+        }
+
+        /* 🪵 ලී පොල්ල - සෑමවිටම ඉදිරියෙන් */
+        #stick {
+            position: absolute;
+            bottom: 40px;
+            left: 55px; /* ආරම්භක පිහිටීම (දකුණු අත පැත්ත) */
+            width: 8px;
+            height: 80px;
+            background: #5d4037;
+            border-radius: 4px;
+            transform-origin: bottom center;
+            transform: rotate(15deg);
+            transition: transform 0.2s ease, left 0.2s;
+            z-index: 3; /* ළමයාට වඩා ඉහළ අගයක් (ඉදිරියෙන්) */
+            box-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .swing-stick {
+            transform: rotate(-110deg) translateY(-20px) !important;
+        }
+
+        .controls { margin-top: 20px; display: flex; gap: 15px; }
+        .btn { padding: 15px 25px; font-size: 1.2rem; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; color: white; box-shadow: 0 4px #ccc; }
+        .btn:active { transform: translateY(2px); box-shadow: 0 2px #ccc; }
+        .move-btn { background-color: #3498db; }
+        .hit-btn { background-color: #e74c3c; padding: 15px 40px; }
+        #next-btn { display: none; background-color: #27ae60; margin-top: 10px; }
+        .back-link { margin-top: 20px; color: #880e4f; text-decoration: none; font-weight: bold; }
+
+        .music-control {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #f1c40f;
+            color: #8b0000;
+            padding: 10px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            z-index: 1000;
+            transition: 0.3s;
+        }
+
+        .music-control:hover {
+            transform: scale(1.1);
+            background-color: #fff;
+        }
+
+        .music-text {
+            font-size: 14px;
+        }
+
+
+    </style>
+</head>
+<body>
+
+    <div class="header-info">
+        <h2 id="mission-title">Mission 1</h2>
+        <p id="message">මුට්ටියක් තෝරා පහර දෙන්න!</p>
+    </div>
+
+    <div id="game-area">
+        <div class="pot-container" id="pots-wrapper"></div>
+        <div id="player-wrapper">
+            <div id="character-body">
+                <div id="character">🚶‍♂️</div>
+                <div id="stick"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button class="btn move-btn" onclick="move(-25)">←</button>
+        <button class="btn hit-btn" onclick="hit()">පහර දෙන්න!</button>
+        <button class="btn move-btn" onclick="move(25)">→</button>
+    </div>
+    
+    <button id="next-btn" class="btn" onclick="startNextMission()">ඊළඟ මිෂන් එකට යන්න →</button>
+    <a href="games.html" class="back-link">← ආපසු මණ්ඩපයට</a>
+
+
+    <audio id="avuruduAudio" loop>
+        <source src="avurudu_song.mp3" type="audio/mpeg">
+    </audio>
+
+    <div class="music-control" onclick="toggleMusic()">
+        <span id="musicIcon">🎵</span>
+        <span id="musicText">සංගීතය ප්ලේ කරන්න</span>
+    </div>
+
+    <script>
+        let currentMission = 1;
+        let playerPos = 50;
+        let isWin = false;
+        let winningPotIndex = 0;
+
+        function initMission() {
+            isWin = false;
+            playerPos = 50;
+            document.getElementById('player-wrapper').style.left = playerPos + "%";
+            document.getElementById('message').innerText = "නිල් වතුර තියෙන මුට්ටිය සොයන්න!";
+            document.getElementById('message').style.color = "black";
+            document.getElementById('next-btn').style.display = "none";
+            
+            const wrapper = document.getElementById('pots-wrapper');
+            wrapper.innerHTML = "";
+            const missions = [
+                { potCount: 3 }, { potCount: 4 }, { potCount: 4 }, 
+                { potCount: 5 }, { potCount: 5 }, { potCount: 6 }, 
+                { potCount: 7 }, { potCount: 8 }, { potCount: 9 }, { potCount: 10 }
+            ];
+
+            const count = missions[currentMission-1].potCount;
+            winningPotIndex = Math.floor(Math.random() * count);
+
+            for (let i = 0; i < count; i++) {
+                const potWrap = document.createElement('div');
+                potWrap.className = 'pot-wrapper';
+                const pot = document.createElement('div');
+                pot.className = 'pot';
+                pot.id = 'pot-' + i;
+                pot.innerText = "🏺";
+                const falling = document.createElement('div');
+                falling.className = 'falling-content';
+                falling.id = 'falling-' + i;
+                falling.style.backgroundColor = (i === winningPotIndex) ? "#3498db" : "#9e9e9e";
+
+                potWrap.appendChild(pot);
+                potWrap.appendChild(falling);
+                wrapper.appendChild(potWrap);
+            }
+        }
+
+        function move(amount) {
+            if (isWin) return;
+            const char = document.getElementById('character');
+            const stick = document.getElementById('stick');
+
+            if (amount < 0) {
+                // වමට යන විට: ප්ලේයර් හැරේ (Face Left)
+                char.style.transform = "scaleX(1)"; 
+                stick.style.left = "35px"; // පොල්ල වම් අත පැත්තට
+            } else {
+                // දකුණට යන විට: ප්ලේයර් හැරේ (Face Right)
+                char.style.transform = "scaleX(-1)"; 
+                stick.style.left = "55px"; // පොල්ල දකුණු අත පැත්තට
+            }
+
+            playerPos += amount / 4; 
+            if (playerPos < 10) playerPos = 10;
+            if (playerPos > 90) playerPos = 90;
+            document.getElementById('player-wrapper').style.left = playerPos + "%";
+        }
+
+        function hit() {
+            if (isWin) return;
+            const stick = document.getElementById('stick');
+            stick.classList.add('swing-stick');
+            setTimeout(() => {
+                checkHit();
+                setTimeout(() => { stick.classList.remove('swing-stick'); }, 150);
+            }, 200);
+        }
+
+        function checkHit() {
+            const count = document.getElementsByClassName('pot').length;
+            const potWidth = 100 / count;
+            let hitIndex = Math.floor(playerPos / potWidth);
+            if (hitIndex >= count) hitIndex = count - 1;
+
+            const pot = document.getElementById('pot-' + hitIndex);
+            const falling = document.getElementById('falling-' + hitIndex);
+
+            pot.innerText = "💥";
+            falling.style.display = "block";
+            falling.style.animation = "fallDown 1s forwards";
+
+            if (hitIndex === winningPotIndex) {
+                isWin = true;
+                document.getElementById('message').innerText = "නියමයි! නිල් වතුර හැලුණා! 🎉";
+                document.getElementById('message').style.color = "#3498db";
+                if (currentMission < 10) document.getElementById('next-btn').style.display = "block";
+                else document.getElementById('message').innerText = "ඔබ ජයග්‍රහණය කළා! 🏆";
+            } else {
+                document.getElementById('message').innerText = "අපොයි අළු! නැවත උත්සාහ කරන්න. ❌";
+                document.getElementById('message').style.color = "#757575";
+                setTimeout(() => {
+                    if(!isWin) {
+                        pot.innerText = "🏺";
+                        falling.style.display = "none";
+                        falling.style.animation = "none";
+                    }
+                }, 1000);
+            }
+        }
+
+        function startNextMission() {
+            currentMission++;
+            document.getElementById('mission-title').innerText = "Mission " + currentMission;
+            initMission();
+        }
+
+        initMission();
+
+
+        /* --- JavaScript Logic --- */
+        const audio = document.getElementById("avuruduAudio");
+        const musicIcon = document.getElementById("musicIcon");
+        const musicText = document.getElementById("musicText");
+
+        // 1. පේජ් එක ලෝඩ් වෙනකොට කලින් තත්වය බලමු
+        window.addEventListener("load", () => {
+            const isPlaying = localStorage.getItem("musicPlaying") === "true";
+            const lastTime = localStorage.getItem("musicTime");
+
+            if (lastTime) {
+                audio.currentTime = parseFloat(lastTime);
+            }
+
+            if (isPlaying) {
+                // බ්‍රවුසරය play එක block කළහොත් catch එක හරහා handle කරයි
+                audio.play().then(() => {
+                    updateUI(true);
+                }).catch(() => {
+                    console.log("Autoplay blocked. Waiting for user interaction.");
+                    localStorage.setItem("musicPlaying", "false");
+                    updateUI(false);
+                });
+            }
+        });
+
+        // 2. හැම තත්පරයකම සින්දුවේ වෙලාව සේව් කරගන්නවා
+        audio.addEventListener("timeupdate", () => {
+            localStorage.setItem("musicTime", audio.currentTime);
+        });
+
+        // 3. ප්ලේ/පෝස් කරන ෆන්ක්ෂන් එක
+        function toggleMusic() {
+            if (audio.paused) {
+                audio.play();
+                localStorage.setItem("musicPlaying", "true");
+                updateUI(true);
+            } else {
+                audio.pause();
+                localStorage.setItem("musicPlaying", "false");
+                updateUI(false);
+            }
+        }
+
+        // 4. බටන් එකේ පෙනුම වෙනස් කරන එක
+        function updateUI(isPlaying) {
+            if (isPlaying) {
+                musicIcon.innerText = "⏸️";
+                musicText.innerText = "සංගීතය නවත්වන්න";
+            } else {
+                musicIcon.innerText = "🎵";
+                musicText.innerText = "සංගීතය ප්ලේ කරන්න";
+            }
+        }
+
+        // 5. පේජ් එකෙන් පිටවන විට අවසන් තත්පරය සේව් කරගන්න
+        window.addEventListener("beforeunload", () => {
+            localStorage.setItem("musicTime", audio.currentTime);
+            localStorage.setItem("musicPlaying", !audio.paused);
+        });
+
+
+    </script>
+</body>
+</html>

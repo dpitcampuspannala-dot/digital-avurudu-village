@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>කඹ ඇදීම - ඩිජිටල් අවුරුදු</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #fff9c4;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .header-info {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px 30px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            border: 2px solid #fbc02d;
+        }
+
+        /* ක්‍රීඩා පිටිය */
+        #game-area {
+            position: relative;
+            width: 80%;
+            max-width: 800px;
+            height: 300px;
+            background-color: #8bc34a; /* තණකොළ පිට්ටනිය */
+            border: 10px solid #5d4037;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        /* මැද ඉර */
+        #center-line {
+            position: absolute;
+            left: 50%;
+            width: 5px;
+            height: 100%;
+            background-color: white;
+            transform: translateX(-50%);
+            z-index: 1;
+        }
+
+        /* කඹය */
+        #rope {
+            position: absolute;
+            width: 200%; /* කඹය පිට්ටනියට වඩා දිගයි */
+            height: 10px;
+            background: repeating-linear-gradient(90deg, #795548, #795548 10px, #8d6e63 10px, #8d6e63 20px);
+            left: -50%; /* මැදට සැකසීම */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: left 0.1s linear;
+        }
+
+        /* කඹයේ මැද රතු ලේන්සුව */
+        #flag {
+            width: 20px;
+            height: 30px;
+            background-color: red;
+            position: absolute;
+        }
+
+        /* කණ්ඩායම් */
+        .team {
+            font-size: 60px;
+            position: absolute;
+            display: flex;
+            gap: 5px;
+        }
+
+        #team-left { left: 10%; }
+        #team-right { right: 10%; transform: scaleX(-1); }
+
+        /* පාලක */
+        .controls {
+            margin-top: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .pull-btn {
+            padding: 20px 60px;
+            font-size: 1.5rem;
+            background-color: #d32f2f;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 6px #b71c1c;
+        }
+
+        .pull-btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 3px #b71c1c;
+        }
+
+        #next-btn {
+            display: none;
+            padding: 12px 30px;
+            background-color: #2e7d32;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .back-link { margin-top: 20px; color: #5d4037; text-decoration: none; font-weight: bold; }
+
+        .music-control {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #f1c40f;
+            color: #8b0000;
+            padding: 10px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            z-index: 1000;
+            transition: 0.3s;
+        }
+
+        .music-control:hover {
+            transform: scale(1.1);
+            background-color: #fff;
+        }
+
+        .music-text {
+            font-size: 14px;
+        }
+
+
+    </style>
+</head>
+<body>
+
+    <div class="header-info">
+        <h2 id="mission-title" style="margin:0; color:#f57f17;">මිෂන් 1</h2>
+        <p id="message" style="margin:5px 0 0 0;">වේගයෙන් "අදින්න!" බොත්තම ඔබා කඹය ඔබ දෙසට ගන්න!</p>
+    </div>
+
+    <div id="game-area">
+        <div id="center-line"></div>
+        <div id="rope">
+            <div id="team-left" class="team">👨‍🌾👨‍🌾</div>
+            <div id="flag"></div>
+            <div id="team-right" class="team">👨‍🌾👨‍🌾</div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button id="pull-btn" class="pull-btn" onclick="playerPull()">අදින්න!</button>
+        <button id="next-btn" onclick="startNextMission()">ඊළඟ මිෂන් එකට යන්න →</button>
+    </div>
+
+
+    <audio id="avuruduAudio" loop>
+        <source src="avurudu_song.mp3" type="audio/mpeg">
+    </audio>
+
+    <div class="music-control" onclick="toggleMusic()">
+        <span id="musicIcon">🎵</span>
+        <span id="musicText">සංගීතය ප්ලේ කරන්න</span>
+    </div>
+
+
+    <a href="games.html" class="back-link">← ආපසු මණ්ඩපයට</a>
+
+    <script>
+        let currentMission = 1;
+        let ropePos = -50; // ආරම්භක පිහිටීම (ප්‍රතිශතයක් ලෙස)
+        let isWin = false;
+        let isGameOver = false;
+
+        // මිෂන් අනුව පරිගණකයේ ශක්තිය (Computer Strength)
+        const missions = [
+            { compPower: 0.2 }, { compPower: 0.4 }, { compPower: 0.6 },
+            { compPower: 0.8 }, { compPower: 1.0 }, { compPower: 1.3 },
+            { compPower: 1.6 }, { compPower: 2.0 }, { compPower: 2.5 }, { compPower: 3.2 }
+        ];
+
+        const rope = document.getElementById('rope');
+        const message = document.getElementById('message');
+        const nextBtn = document.getElementById('next-btn');
+        const pullBtn = document.getElementById('pull-btn');
+
+        // ප්ලේයර් කඹය ඇදීම
+        function playerPull() {
+            if (isGameOver) return;
+            ropePos -= 1.5; // ප්ලේයර් වමට අදියි
+            updateRope();
+            checkWin();
+        }
+
+        // පරිගණකය ස්වයංක්‍රීයව කඹය ඇදීම
+        setInterval(() => {
+            if (!isGameOver) {
+                ropePos += missions[currentMission - 1].compPower; // පරිගණකය දකුණට අදියි
+                updateRope();
+                checkWin();
+            }
+        }, 100);
+
+        function updateRope() {
+            rope.style.left = ropePos + "%";
+        }
+
+        function checkWin() {
+            // ප්ලේයර් දිනුවොත් (කඹය වමට ගියොත්)
+            if (ropePos <= -70) {
+                isGameOver = true;
+                isWin = true;
+                message.innerText = "නියමයි! ඔබ පරිගණක කණ්ඩායම පරාජය කළා! 🎉";
+                message.style.color = "green";
+                if (currentMission < 10) nextBtn.style.display = "block";
+                else message.innerText = "සුභ පැතුම්! ඔබ කඹ ඇදීමේ මහා ශූරයා වුණා! 🏆";
+                pullBtn.style.visibility = "hidden";
+            }
+            // පරිගණකය දිනුවොත් (කඹය දකුණට ගියොත්)
+            else if (ropePos >= -30) {
+                isGameOver = true;
+                message.innerText = "අපොයි! පරිගණක කණ්ඩායම ඔබව ඇදගත්තා. ❌";
+                message.style.color = "red";
+                setTimeout(resetMission, 2000);
+            }
+        }
+
+        function resetMission() {
+            ropePos = -50;
+            isGameOver = false;
+            isWin = false;
+            pullBtn.style.visibility = "visible";
+            nextBtn.style.display = "none";
+            message.innerText = 'වේගයෙන් "අදින්න!" බොත්තම ඔබන්න!';
+            message.style.color = "black";
+            updateRope();
+        }
+
+        function startNextMission() {
+            currentMission++;
+            document.getElementById('mission-title').innerText = "මිෂන් " + currentMission;
+            resetMission();
+        }
+
+        /* --- JavaScript Logic --- */
+        const audio = document.getElementById("avuruduAudio");
+        const musicIcon = document.getElementById("musicIcon");
+        const musicText = document.getElementById("musicText");
+
+        // 1. පේජ් එක ලෝඩ් වෙනකොට කලින් තත්වය බලමු
+        window.addEventListener("load", () => {
+            const isPlaying = localStorage.getItem("musicPlaying") === "true";
+            const lastTime = localStorage.getItem("musicTime");
+
+            if (lastTime) {
+                audio.currentTime = parseFloat(lastTime);
+            }
+
+            if (isPlaying) {
+                // බ්‍රවුසරය play එක block කළහොත් catch එක හරහා handle කරයි
+                audio.play().then(() => {
+                    updateUI(true);
+                }).catch(() => {
+                    console.log("Autoplay blocked. Waiting for user interaction.");
+                    localStorage.setItem("musicPlaying", "false");
+                    updateUI(false);
+                });
+            }
+        });
+
+        // 2. හැම තත්පරයකම සින්දුවේ වෙලාව සේව් කරගන්නවා
+        audio.addEventListener("timeupdate", () => {
+            localStorage.setItem("musicTime", audio.currentTime);
+        });
+
+        // 3. ප්ලේ/පෝස් කරන ෆන්ක්ෂන් එක
+        function toggleMusic() {
+            if (audio.paused) {
+                audio.play();
+                localStorage.setItem("musicPlaying", "true");
+                updateUI(true);
+            } else {
+                audio.pause();
+                localStorage.setItem("musicPlaying", "false");
+                updateUI(false);
+            }
+        }
+
+        // 4. බටන් එකේ පෙනුම වෙනස් කරන එක
+        function updateUI(isPlaying) {
+            if (isPlaying) {
+                musicIcon.innerText = "⏸️";
+                musicText.innerText = "සංගීතය නවත්වන්න";
+            } else {
+                musicIcon.innerText = "🎵";
+                musicText.innerText = "සංගීතය ප්ලේ කරන්න";
+            }
+        }
+
+        // 5. පේජ් එකෙන් පිටවන විට අවසන් තත්පරය සේව් කරගන්න
+        window.addEventListener("beforeunload", () => {
+            localStorage.setItem("musicTime", audio.currentTime);
+            localStorage.setItem("musicPlaying", !audio.paused);
+        });
+
+
+    </script>
+</body>
+</html>
