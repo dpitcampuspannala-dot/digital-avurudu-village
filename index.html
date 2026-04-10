@@ -6,78 +6,141 @@
     <title>ඩිජිටල් අවුරුදු ගම්මානය - 2026</title>
     <style>
         /* මූලික සැකසුම් */
-        body { margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #fff9f0; overflow-x: hidden; }
+        :root {
+            --primary-red: #8b0000;
+            --gold: #f1c40f;
+            --white: #fff9f0;
+        }
+
+        body { 
+            margin: 0; padding: 0; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background-color: var(--white); 
+            overflow-x: hidden; 
+            line-height: 1.6;
+        }
         
         /* Header & Hero Section */
         header { 
-            background: linear-gradient(rgba(139, 0, 0, 0.7), rgba(139, 0, 0, 0.7)), url('avurudu_bg.jpg'); 
-            background-size: cover; background-position: center; height: 100vh; 
+            background: linear-gradient(rgba(139, 0, 0, 0.75), rgba(139, 0, 0, 0.75)), url('avurudu_bg.jpg'); 
+            background-size: cover; 
+            background-position: center; 
+            height: 100vh; 
+            min-height: 500px;
             display: flex; flex-direction: column; align-items: center; justify-content: center; 
-            text-align: center; color: #f1c40f; position: relative;
+            text-align: center; color: var(--gold); 
+            position: relative;
+            padding: 0 20px;
         }
 
         /* About Menu Dot (⋮) */
         .about-trigger {
-            position: absolute; top: 25px; right: 25px; cursor: pointer;
-            font-size: 35px; color: #f1c40f; transition: 0.3s; z-index: 1001;
+            position: absolute; top: 20px; right: 20px; cursor: pointer;
+            font-size: clamp(30px, 5vw, 40px); color: var(--gold); 
+            transition: 0.3s; z-index: 1001;
             line-height: 1;
+            background: rgba(0,0,0,0.2);
+            border-radius: 50%;
+            width: 50px; height: 50px;
+            display: flex; align-items: center; justify-content: center;
         }
-        .about-trigger:hover { transform: rotate(90deg); color: #fff; }
+        .about-trigger:hover { transform: rotate(90deg); color: #fff; background: var(--primary-red); }
 
-        h1 { font-size: 4rem; margin-bottom: 10px; text-shadow: 3px 3px 10px rgba(0,0,0,0.5); }
-        p.sub-text { font-size: 1.5rem; color: #fff; margin-bottom: 40px; }
+        /* Fluid Typography */
+        h1 { 
+            font-size: clamp(2.2rem, 8vw, 4.5rem); 
+            margin: 0 0 10px 0; 
+            text-shadow: 3px 3px 15px rgba(0,0,0,0.5); 
+            font-weight: 800;
+        }
+        p.sub-text { 
+            font-size: clamp(1rem, 3vw, 1.4rem); 
+            color: #fff; 
+            margin-bottom: 40px; 
+            max-width: 800px;
+        }
 
         /* Button Container */
         .btn-container {
             display: flex;
-            gap: 20px;
+            gap: 15px;
             flex-wrap: wrap;
             justify-content: center;
+            width: 100%;
         }
 
-        /* Explore Buttons Common Style */
+        /* Explore Buttons */
         .explore-btn {
-            padding: 15px 35px; border-radius: 50px; text-decoration: none; 
-            font-size: 1.2rem; font-weight: bold; transition: 0.3s; 
+            padding: clamp(12px, 3vw, 16px) clamp(25px, 5vw, 40px); 
+            border-radius: 50px; text-decoration: none; 
+            font-size: clamp(0.9rem, 2.5vw, 1.2rem); 
+            font-weight: bold; transition: 0.3s; 
             box-shadow: 0 5px 15px rgba(0,0,0,0.3); border: 2px solid transparent;
+            display: inline-block;
         }
 
-        /* Enter Village Button */
-        .village-btn {
-            background-color: #f1c40f; color: #8b0000;
-        }
-        .village-btn:hover { background-color: #fff; transform: scale(1.05); }
+        .village-btn { background-color: var(--gold); color: var(--primary-red); }
+        .village-btn:hover { background-color: #fff; transform: translateY(-3px); }
 
-        /* Games Page Button */
-        .games-btn {
-            background-color: transparent; color: #f1c40f; border: 2px solid #f1c40f;
-        }
-        .games-btn:hover { background-color: #f1c40f; color: #8b0000; transform: scale(1.05); }
+        .games-btn { background-color: transparent; color: var(--gold); border: 2px solid var(--gold); }
+        .games-btn:hover { background-color: var(--gold); color: var(--primary-red); transform: translateY(-3px); }
 
         /* Floating Music Toggle */
         .music-control {
-            position: fixed; bottom: 30px; right: 30px; background-color: #f1c40f; color: #8b0000;
-            padding: 12px 25px; border-radius: 50px; cursor: pointer; display: flex; align-items: center;
-            gap: 10px; font-weight: bold; box-shadow: 0 5px 20px rgba(0,0,0,0.4); z-index: 1000;
+            position: fixed; bottom: 25px; right: 25px; 
+            background-color: var(--gold); color: var(--primary-red);
+            padding: 10px 20px; border-radius: 50px; cursor: pointer; 
+            display: flex; align-items: center; gap: 8px; 
+            font-weight: bold; box-shadow: 0 5px 20px rgba(0,0,0,0.4); 
+            z-index: 1000;
+            font-size: 0.9rem;
+            transition: 0.3s;
         }
+        .music-control:hover { transform: scale(1.05); background: #fff; }
 
-        /* About Modal (DP Education) */
+        /* About Modal Responsive */
         .modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85); z-index: 2000; align-items: center; justify-content: center;
+            background: rgba(0,0,0,0.9); z-index: 2000; align-items: center; justify-content: center;
+            padding: 20px; box-sizing: border-box;
         }
         .modal-content {
-            background: white; padding: 40px; border-radius: 25px; max-width: 550px; width: 90%;
-            text-align: center; border: 5px solid #f1c40f; position: relative;
+            background: white; padding: clamp(20px, 5vw, 40px); 
+            border-radius: 25px; max-width: 550px; width: 100%;
+            text-align: center; border: 5px solid var(--gold); 
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
         }
-        .close-modal { position: absolute; top: 15px; right: 20px; font-size: 30px; cursor: pointer; color: #8b0000; font-weight: bold; }
-        .dp-logo { width: 180px; margin-bottom: 20px; }
+        .close-modal { 
+            position: sticky; top: -10px; float: right; 
+            font-size: 35px; cursor: pointer; color: var(--primary-red); 
+            font-weight: bold; z-index: 2001; 
+        }
+        
+        .dp-logo { width: clamp(120px, 20vw, 180px); margin-bottom: 15px; border-radius: 10px; }
+        .modal-content h2 { color: var(--primary-red); font-size: clamp(1.2rem, 4vw, 1.8rem); margin-top: 10px; }
+        .modal-content p { font-size: 0.95rem; color: #444; line-height: 1.7; text-align: justify; }
 
-        @media (max-width: 768px) {
-            h1 { font-size: 2.5rem; }
-            p.sub-text { font-size: 1.1rem; }
-            .btn-container { flex-direction: column; gap: 15px; }
-            .explore-btn { font-size: 1rem; padding: 12px 30px; }
+        .social-links { 
+            margin-top: 25px; 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); 
+            gap: 10px; 
+        }
+        .social-link {
+            color: var(--primary-red); font-weight: bold; text-decoration: none; 
+            border: 2px solid var(--primary-red); padding: 8px 10px; 
+            border-radius: 8px; font-size: 0.85rem; transition: 0.2s;
+        }
+        .social-link:hover { background: var(--primary-red); color: #fff; }
+
+        /* Mobile specific adjustments */
+        @media (max-width: 480px) {
+            .btn-container { flex-direction: column; width: 80%; }
+            .explore-btn { width: 100%; box-sizing: border-box; }
+            .music-control { padding: 10px; border-radius: 50%; }
+            .music-control span:last-child { display: none; } /* Mobile වලදී Text එක හංගනවා */
         }
     </style>
 </head>
@@ -100,23 +163,23 @@
     </audio>
 
     <div class="music-control" onclick="toggleMusic()">
-        <span id="musicIcon">🎵</span> <span id="musicText">සංගීතය ප්ලේ කරන්න</span>
+        <span id="musicIcon">🎵</span> <span>සංගීතය</span>
     </div>
 
     <div id="aboutModal" class="modal">
         <div class="modal-content">
             <span class="close-modal" onclick="closeAbout()">&times;</span>
             <img src="DP.png" alt="DP Education" class="dp-logo" onerror="this.src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR61f8HlG0qf_K3hT9i-7kG3y_L3I5I5fS0uA&s'">
-            <h2>DP Education Bulathkohupitiya </h2>
-            <p style="text-align: justify; line-height: 1.8; color: #444;">
+            <h2>DP Education Bulathkohupitiya</h2>
+            <p>
                 <b>DP Education Bulathkohupitiya</b> යනු ශ්‍රී ලාංකීය දරු පරපුරේ අධ්‍යාපනය ඩිජිටල් තාක්ෂණය ඔස්සේ ඉහළ නැංවීමට කැපවී සිටින මෙරට ප්‍රමුඛතම වේදිකාවයි. 
                 අනාගත ලෝකයට ගැළපෙන කුසලතා පූර්පුරක් බිහි කිරීම අපගේ අරමුණයි. 
                 සංස්කෘතික වටිනාකම් තාක්ෂණය සමඟ මුසු කර දරුවන් අතරට ගෙනයාම අපගේ එක් මෙහෙවරකි.
             </p>
-            <div style="margin-top: 20px;">
-                <a href="https://whatsapp.com/channel/0029Vb7Kc37CRs1lKrYi3A1R" target="_blank" style="color: #8b0000; font-weight: bold; text-decoration: none; border: 2px solid #8b0000; padding: 8px 20px; border-radius: 8px;">Whatsapp Chanel</a>
-                <a href="https://www.facebook.com/profile.php?id=61584459515379" target="_blank" style="color: #8b0000; font-weight: bold; text-decoration: none; border: 2px solid #8b0000; padding: 8px 20px; border-radius: 8px;">Facebook</a>
-                <a href="https://youtube.com/@dpitcampuspannala?si=N-Ip4r4A8ctIfbfK" target="_blank" style="color: #8b0000; font-weight: bold; text-decoration: none; border: 2px solid #8b0000; padding: 8px 20px; border-radius: 8px;">Youtube</a>
+            <div class="social-links">
+                <a href="https://whatsapp.com/channel/0029Vb7Kc37CRs1lKrYi3A1R" target="_blank" class="social-link">Whatsapp</a>
+                <a href="https://www.facebook.com/profile.php?id=61584459515379" target="_blank" class="social-link">Facebook</a>
+                <a href="https://youtube.com/@dpitcampuspannala?si=N-Ip4r4A8ctIfbfK" target="_blank" class="social-link">Youtube</a>
             </div>
         </div>
     </div>
@@ -124,13 +187,10 @@
     <script>
         const bgAudio = document.getElementById("avuruduAudio");
         const musicIcon = document.getElementById("musicIcon");
-        const musicText = document.getElementById("musicText");
 
-        // --- About Logic ---
         function openAbout() { document.getElementById("aboutModal").style.display = "flex"; }
         function closeAbout() { document.getElementById("aboutModal").style.display = "none"; }
 
-        // --- Background Music Logic ---
         window.addEventListener("load", () => {
             const isPlaying = localStorage.getItem("musicPlaying") === "true";
             const lastTime = localStorage.getItem("musicTime");
@@ -156,7 +216,6 @@
 
         function updateMusicUI(isPlaying) {
             musicIcon.innerText = isPlaying ? "⏸️" : "🎵";
-            musicText.innerText = isPlaying ? "සංගීතය නවත්වන්න" : "සංගීතය ප්ලේ කරන්න";
         }
 
         window.onclick = function(event) {
