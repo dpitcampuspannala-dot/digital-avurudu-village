@@ -5,63 +5,118 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>බිත්තර ඇල්ලීම Pro - ඩිජිටල් අවුරුදු ගම්මානය</title>
     <style>
-        body { margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; background-color: #fdf2e9; text-align: center; color: #333; overflow: hidden; }
-        .container { max-width: 600px; margin: 0 auto; padding: 15px; position: relative; height: 100vh; display: flex; flex-direction: column; }
+        :root {
+            --primary-red: #8b0000;
+            --gold: #f1c40f;
+            --grass: #27ae60;
+        }
+
+        body { 
+            margin: 0; padding: 0; 
+            font-family: 'Segoe UI', sans-serif; 
+            background-color: #fdf2e9; 
+            text-align: center; 
+            color: #333; 
+            overflow: hidden; 
+            touch-action: none; /* Screen scroll වැළැක්වීමට */
+        }
+
+        .container { 
+            width: 100%; 
+            max-width: 600px; 
+            margin: 0 auto; 
+            height: 100vh; 
+            display: flex; 
+            flex-direction: column; 
+            position: relative;
+        }
         
         /* Menu Screen */
-        #menuScreen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #fdf2e9; z-index: 20; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .menu-title { color: #8b0000; font-size: 2.5rem; margin-bottom: 30px; }
+        #menuScreen { 
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+            background: #fdf2e9; z-index: 20; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+        }
+        .menu-title { color: var(--primary-red); font-size: clamp(2rem, 8vw, 3rem); margin-bottom: 30px; }
         
-        /* Mission Header */
-        .game-header { background: #8b0000; color: white; padding: 10px; border-radius: 15px; margin-bottom: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); display: none; }
-        
-        #gameArea { flex-grow: 1; background-color: #eafaf1; border: 3px solid #FFD700; border-radius: 20px; position: relative; overflow: hidden; cursor: crosshair; box-shadow: inset 0 0 20px rgba(0,0,0,0.1); }
-        
-        .score-board { display: none; justify-content: space-around; background: white; padding: 8px; border-radius: 10px; margin-bottom: 10px; font-weight: bold; }
-        #score { color: #27ae60; }
-        #missed { color: #c0392b; }
+        /* Header & Scoreboard */
+        .game-header { 
+            background: var(--primary-red); color: white; 
+            padding: 10px; border-radius: 0 0 20px 20px; 
+            display: none; box-shadow: 0 4px 10px rgba(0,0,0,0.2); 
+        }
+        .game-header h2 { margin: 5px 0; font-size: 1.2rem; }
+        .game-header p { margin: 0; font-size: 0.9rem; opacity: 0.9; }
 
-        #basket { width: 80px; height: 50px; position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); font-size: 55px; pointer-events: none; }
-        .egg { width: 30px; height: 40px; position: absolute; font-size: 30px; }
+        .score-board { 
+            display: none; justify-content: space-around; 
+            background: white; padding: 10px; 
+            font-weight: bold; font-size: 0.9rem;
+            border-bottom: 2px solid var(--gold);
+        }
+        #score { color: var(--grass); font-size: 1.2rem; }
+        #missed { color: #c0392b; font-size: 1.2rem; }
+
+        /* Game Area */
+        #gameArea { 
+            flex-grow: 1; 
+            background-color: #eafaf1; 
+            position: relative; 
+            overflow: hidden; 
+            cursor: crosshair; 
+            border-left: 4px solid var(--gold);
+            border-right: 4px solid var(--gold);
+        }
         
+        #basket { 
+            width: clamp(60px, 15vw, 90px); 
+            height: 40px; 
+            position: absolute; 
+            bottom: 30px; 
+            left: 50%; 
+            transform: translateX(-50%); 
+            font-size: clamp(40px, 12vw, 60px); 
+            display: flex; justify-content: center; align-items: center;
+            pointer-events: none; 
+            z-index: 5;
+        }
+
+        .egg { 
+            position: absolute; 
+            font-size: clamp(25px, 8vw, 35px); 
+            user-select: none;
+        }
+
         /* Overlays */
-        .overlay { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); color: white; border-radius: 17px; flex-direction: column; align-items: center; justify-content: center; z-index: 10; padding: 20px; box-sizing: border-box; }
+        .overlay { 
+            display: none; position: absolute; top: 0; left: 0; 
+            width: 100%; height: 100%; background: rgba(0,0,0,0.85); 
+            color: white; flex-direction: column; align-items: center; 
+            justify-content: center; z-index: 15; padding: 20px; box-sizing: border-box; 
+        }
         
-        .btn { background-color: #27ae60; color: white; padding: 15px 40px; border: none; border-radius: 50px; font-weight: bold; cursor: pointer; font-size: 1.2rem; margin: 10px; text-decoration: none; width: 220px; }
-        .btn-orange { background-color: #e67e22; }
-        .btn-red { background-color: #8b0000; }
-        .btn:hover { opacity: 0.9; transform: scale(1.05); }
+        /* Buttons */
+        .btn { 
+            background-color: var(--grass); color: white; 
+            padding: 15px 0; width: 80%; max-width: 250px;
+            border: none; border-radius: 50px; font-weight: bold; 
+            cursor: pointer; font-size: 1.1rem; margin: 10px; 
+            transition: 0.2s; box-shadow: 0 4px 0 #1e8449;
+        }
+        .btn-orange { background-color: #e67e22; box-shadow: 0 4px 0 #d35400; }
+        .btn-red { background-color: var(--primary-red); box-shadow: 0 4px 0 #5e0000; }
+        .btn:active { transform: translateY(2px); box-shadow: none; }
 
-        .back-link { color: #8b0000; text-decoration: none; font-weight: bold; margin-bottom: 5px; display: inline-block; }
+        .back-link { color: var(--primary-red); text-decoration: none; font-weight: bold; margin-top: 20px; border-bottom: 2px solid var(--primary-red); }
 
         .music-control {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background-color: #f1c40f;
-            color: #8b0000;
-            padding: 10px 20px;
-            border-radius: 50px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-weight: bold;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            z-index: 1000;
-            transition: 0.3s;
+            position: fixed; bottom: 20px; right: 20px;
+            background-color: var(--gold); color: var(--primary-red);
+            padding: 10px 15px; border-radius: 50px;
+            cursor: pointer; display: flex; align-items: center;
+            gap: 8px; font-weight: bold; box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            z-index: 1000; font-size: 0.8rem;
         }
-
-        .music-control:hover {
-            transform: scale(1.1);
-            background-color: #fff;
-        }
-
-        .music-text {
-            font-size: 14px;
-        }
-
-
     </style>
 </head>
 <body>
@@ -71,7 +126,6 @@
         <h1 class="menu-title">බිත්තර ඇල්ලීම</h1>
         <button class="btn" onclick="startMode('missions')">Missions 10</button>
         <button class="btn btn-orange" onclick="startMode('unlimited')">Unlimited Play</button>
-        <br>
         <a href="games.html" class="back-link">← ආපසු ක්‍රීඩා මණ්ඩපයට</a>
     </div>
 
@@ -83,11 +137,11 @@
     <div class="score-board" id="scoreBoard">
         <div>ලකුණු: <span id="score">0</span></div>
         <div id="targetContainer">ඉලක්කය: <span id="target">0</span></div>
-        <div>මගහැරුණු: <span id="missed">0</span>/5</div>
+        <div>බිඳුණු: <span id="missed">0</span>/5</div>
     </div>
 
     <div id="gameArea">
-        <div id="basket">🗑️</div>
+        <div id="basket">🧺</div>
         
         <div id="statusOverlay" class="overlay">
             <h2 id="statusTitle">විශිෂ්ටයි!</h2>
@@ -98,15 +152,12 @@
     </div>
 </div>
 
+<audio id="avuruduAudio" loop><source src="avurudu_song.mp3" type="audio/mpeg"></audio>
 
-<audio id="avuruduAudio" loop>
-        <source src="avurudu_song.mp3" type="audio/mpeg">
-    </audio>
-
-    <div class="music-control" onclick="toggleMusic()">
-        <span id="musicIcon">🎵</span>
-        <span id="musicText">සංගීතය ප්ලේ කරන්න</span>
-    </div>
+<div class="music-control" onclick="toggleMusic()">
+    <span id="musicIcon">🎵</span>
+    <span id="musicText">Music</span>
+</div>
 
 <script>
     const missions = [
@@ -122,7 +173,7 @@
         { title: "Mission 10", target: 80, speed: 8, interval: 650 }
     ];
 
-    let currentMode = ''; // 'missions' or 'unlimited'
+    let currentMode = ''; 
     let currentMIdx = 0;
     let score = 0, missed = 0;
     let gameActive = false;
@@ -144,8 +195,6 @@
             initMission();
         } else {
             document.getElementById('targetContainer').style.display = 'none';
-            document.getElementById('mTitle').innerText = "Unlimited Mode";
-            document.getElementById('mDesc').innerText = "හැකි උපරිම ලකුණු ලබාගන්න!";
             initUnlimited();
         }
     }
@@ -162,7 +211,7 @@
         score = 0; missed = 0;
         currentSpeed = 3;
         currentSpawnRate = 1500;
-        setupGameState("Unlimited Mode", "බිත්තර 5ක් වැටෙන්න නොදී අල්ලාගන්න.", "∞");
+        setupGameState("Unlimited Play", "බිත්තර 5ක් වැටෙන්න නොදී අල්ලාගන්න.", "∞");
     }
 
     function setupGameState(title, desc, target) {
@@ -187,7 +236,8 @@
         const egg = document.createElement('div');
         egg.className = 'egg';
         egg.innerText = '🥚';
-        const randomX = Math.floor(Math.random() * (document.getElementById('gameArea').clientWidth - 60)) + 30;
+        const areaWidth = document.getElementById('gameArea').clientWidth;
+        const randomX = Math.floor(Math.random() * (areaWidth - 50)) + 25;
         egg.style.left = randomX + 'px';
         egg.style.top = '-50px';
         document.getElementById('gameArea').appendChild(egg);
@@ -196,7 +246,8 @@
 
     function updateGame() {
         if (!gameActive) return;
-        const basketRect = document.getElementById('basket').getBoundingClientRect();
+        const basket = document.getElementById('basket');
+        const basketRect = basket.getBoundingClientRect();
         const areaRect = document.getElementById('gameArea').getBoundingClientRect();
 
         for (let i = eggs.length - 1; i >= 0; i--) {
@@ -206,8 +257,12 @@
             
             const eggRect = egg.getBoundingClientRect();
 
-            // Catching
-            if (eggRect.bottom > basketRect.top && eggRect.right > basketRect.left && eggRect.left < basketRect.right && eggRect.top < basketRect.bottom) {
+            // Catching Logic
+            if (eggRect.bottom > basketRect.top && 
+                eggRect.right > basketRect.left && 
+                eggRect.left < basketRect.right && 
+                eggRect.top < basketRect.bottom) {
+                
                 score++;
                 document.getElementById('score').innerText = score;
                 egg.remove();
@@ -218,22 +273,19 @@
                     return;
                 }
                 
-                if (currentMode === 'unlimited') {
-                    // Unlimited වලදී ලකුණු 10කට වරක් අමාරු කරනවා
-                    if (score % 10 === 0) {
-                        currentSpeed += 0.3;
-                        if (currentSpawnRate > 500) {
-                            currentSpawnRate -= 50;
-                            clearInterval(eggInterval);
-                            eggInterval = setInterval(createEgg, currentSpawnRate);
-                        }
+                if (currentMode === 'unlimited' && score % 10 === 0) {
+                    currentSpeed += 0.3;
+                    if (currentSpawnRate > 600) {
+                        currentSpawnRate -= 50;
+                        clearInterval(eggInterval);
+                        eggInterval = setInterval(createEgg, currentSpawnRate);
                     }
                 }
                 continue;
             }
 
-            // Missing
-            if (eggRect.bottom > areaRect.bottom - 10) {
+            // Ground Collision Logic
+            if (eggRect.bottom > areaRect.bottom) {
                 missed++;
                 document.getElementById('missed').innerText = missed;
                 egg.innerText = '💥';
@@ -279,8 +331,8 @@
         
         title.innerText = "අපොයි!";
         title.style.color = "#e74c3c";
-        document.getElementById('statusMsg').innerText = (currentMode === 'unlimited') ? `ඔබේ ලකුණු: ${score}` : "බිත්තර 5ක්ම බිඳුණා. Mission එක අසාර්ථකයි.";
-        btn.innerText = "නැවත උත්සාහ කරන්න";
+        document.getElementById('statusMsg').innerText = (currentMode === 'unlimited') ? `ඔබේ ලකුණු: ${score}` : "බිත්තර 5ක්ම බිඳුණා. නැවත උත්සාහ කරන්න.";
+        btn.innerText = "නැවත පටන් ගන්න";
         btn.style.display = "inline-block";
         overlay.style.display = 'flex';
     }
@@ -306,82 +358,52 @@
         document.getElementById('statusOverlay').style.display = 'none';
     }
 
-    // Basket Controls
-    function move(e) {
+    // Basket Controls (Mouse & Touch)
+    function moveBasket(e) {
         if (!gameActive) return;
-        let x = (e.type.includes('touch')) ? e.touches[0].clientX : e.clientX;
-        let rect = document.getElementById('gameArea').getBoundingClientRect();
+        let x;
+        if (e.type.includes('touch')) {
+            x = e.touches[0].clientX;
+        } else {
+            x = e.clientX;
+        }
+        
+        const area = document.getElementById('gameArea');
+        const rect = area.getBoundingClientRect();
+        const basket = document.getElementById('basket');
+        const basketWidth = basket.offsetWidth;
+        
         let relX = x - rect.left;
-        if (relX < 40) relX = 40;
-        if (relX > rect.width - 40) relX = rect.width - 40;
-        document.getElementById('basket').style.left = relX + 'px';
+        
+        // සීමාවන් තුළ තබා ගැනීම
+        if (relX < basketWidth/2) relX = basketWidth/2;
+        if (relX > rect.width - basketWidth/2) relX = rect.width - basketWidth/2;
+        
+        basket.style.left = relX + 'px';
     }
 
-    document.getElementById('gameArea').addEventListener('mousemove', move);
-    document.getElementById('gameArea').addEventListener('touchmove', move, {passive: true});
+    document.getElementById('gameArea').addEventListener('mousemove', moveBasket);
+    document.getElementById('gameArea').addEventListener('touchmove', (e) => {
+        e.preventDefault(); // Scroll වැළැක්වීමට
+        moveBasket(e);
+    }, {passive: false});
 
+    // Music
+    const audio = document.getElementById("avuruduAudio");
+    const musicIcon = document.getElementById("musicIcon");
 
-    /* --- JavaScript Logic --- */
-        const audio = document.getElementById("avuruduAudio");
-        const musicIcon = document.getElementById("musicIcon");
-        const musicText = document.getElementById("musicText");
-
-        // 1. පේජ් එක ලෝඩ් වෙනකොට කලින් තත්වය බලමු
-        window.addEventListener("load", () => {
-            const isPlaying = localStorage.getItem("musicPlaying") === "true";
-            const lastTime = localStorage.getItem("musicTime");
-
-            if (lastTime) {
-                audio.currentTime = parseFloat(lastTime);
-            }
-
-            if (isPlaying) {
-                // බ්‍රවුසරය play එක block කළහොත් catch එක හරහා handle කරයි
-                audio.play().then(() => {
-                    updateUI(true);
-                }).catch(() => {
-                    console.log("Autoplay blocked. Waiting for user interaction.");
-                    localStorage.setItem("musicPlaying", "false");
-                    updateUI(false);
-                });
-            }
-        });
-
-        // 2. හැම තත්පරයකම සින්දුවේ වෙලාව සේව් කරගන්නවා
-        audio.addEventListener("timeupdate", () => {
-            localStorage.setItem("musicTime", audio.currentTime);
-        });
-
-        // 3. ප්ලේ/පෝස් කරන ෆන්ක්ෂන් එක
-        function toggleMusic() {
-            if (audio.paused) {
-                audio.play();
-                localStorage.setItem("musicPlaying", "true");
-                updateUI(true);
-            } else {
-                audio.pause();
-                localStorage.setItem("musicPlaying", "false");
-                updateUI(false);
-            }
+    function toggleMusic() {
+        if (audio.paused) {
+            audio.play(); localStorage.setItem("musicPlaying", "true"); musicIcon.innerText = "⏸️";
+        } else {
+            audio.pause(); localStorage.setItem("musicPlaying", "false"); musicIcon.innerText = "🎵";
         }
+    }
 
-        // 4. බටන් එකේ පෙනුම වෙනස් කරන එක
-        function updateUI(isPlaying) {
-            if (isPlaying) {
-                musicIcon.innerText = "⏸️";
-                musicText.innerText = "සංගීතය නවත්වන්න";
-            } else {
-                musicIcon.innerText = "🎵";
-                musicText.innerText = "සංගීතය ප්ලේ කරන්න";
-            }
-        }
-
-        // 5. පේජ් එකෙන් පිටවන විට අවසන් තත්පරය සේව් කරගන්න
-        window.addEventListener("beforeunload", () => {
-            localStorage.setItem("musicTime", audio.currentTime);
-            localStorage.setItem("musicPlaying", !audio.paused);
-        });
-
+    window.addEventListener("load", () => {
+        const isPlaying = localStorage.getItem("musicPlaying") === "true";
+        if (isPlaying) { audio.play().catch(() => {}); musicIcon.innerText = "⏸️"; }
+    });
 </script>
 </body>
 </html>
