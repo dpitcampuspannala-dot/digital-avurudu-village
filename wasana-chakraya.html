@@ -3,27 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>වාසනා චක්‍රය - No Pointer</title>
+    <title>වාසනා චක්‍රය - ඩිජිටල් අවුරුදු ගම්මානය</title>
     <style>
-        body { margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; background-color: #fdf2e9; text-align: center; color: #333; overflow-x: hidden; }
-        .container { max-width: 800px; margin: 30px auto; padding: 20px; }
-        h1 { color: #8b0000; margin-bottom: 30px; font-size: 2.5rem; }
-        
-        .game-area { display: inline-flex; flex-direction: column; align-items: center; background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border: 4px solid #FFD700; position: relative; }
+        :root {
+            --primary-red: #8b0000;
+            --gold: #FFD700;
+            --orange: #e67e22;
+        }
 
-        .wheel-container { position: relative; width: 350px; height: 350px; margin-bottom: 30px; }
+        body { 
+            margin: 0; padding: 0; 
+            font-family: 'Segoe UI', sans-serif; 
+            background-color: #fdf2e9; 
+            text-align: center; 
+            color: #333; 
+            overflow-x: hidden; 
+        }
+
+        .container { 
+            width: 95%; 
+            max-width: 800px; 
+            margin: 20px auto; 
+            padding: 10px; 
+            box-sizing: border-box;
+        }
+
+        h1 { 
+            color: var(--primary-red); 
+            margin-bottom: 20px; 
+            font-size: clamp(1.8rem, 5vw, 2.5rem); 
+        }
+        
+        /* Game Area Responsive */
+        .game-area { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            background: white; 
+            padding: clamp(20px, 5vw, 40px); 
+            border-radius: 20px; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1); 
+            border: 4px solid var(--gold); 
+            position: relative; 
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        /* Wheel Container Responsive */
+        .wheel-container { 
+            position: relative; 
+            width: min(80vw, 400px); 
+            height: min(80vw, 400px); 
+            margin-bottom: 30px; 
+        }
 
         .wheel { 
-            width: 100%; height: 100%; border-radius: 50%; border: 10px solid #d35400; box-shadow: 0 0 20px rgba(0,0,0,0.2); 
-            overflow: hidden; position: relative;
+            width: 100%; height: 100%; 
+            border-radius: 50%; 
+            border: clamp(5px, 2vw, 10px) solid #d35400; 
+            box-shadow: 0 0 20px rgba(0,0,0,0.2); 
+            overflow: hidden; 
+            position: relative;
             transition: transform 5s cubic-bezier(0.15, 0.05, 0.1, 1); 
         }
         
         .wheel::after {
-            content: ''; position: absolute; top: 50%; left: 50%; width: 35px; height: 35px; background: white; border-radius: 50%; transform: translate(-50%, -50%); z-index: 5; border: 5px solid #d35400; box-shadow: 0 0 10px rgba(0,0,0,0.3);
+            content: ''; position: absolute; top: 50%; left: 50%; 
+            width: clamp(20px, 8vw, 35px); height: clamp(20px, 8vw, 35px); 
+            background: white; border-radius: 50%; 
+            transform: translate(-50%, -50%); 
+            z-index: 5; border: 4px solid #d35400; 
+            box-shadow: 0 0 10px rgba(0,0,0,0.3);
         }
 
-        /* ආරම්භයේදී පළමු කොටස මැදට ගෙන ඒමට -22.5deg ඇත */
         .wheel-inner { 
             width: 100%; height: 100%; border-radius: 50%; 
             background: conic-gradient(
@@ -35,17 +87,21 @@
         }
 
         .segment-label { 
-            position: absolute; width: 50%; height: 40px; top: 50%; left: 50%; 
+            position: absolute; width: 50%; height: 30px; top: 50%; left: 50%; 
             transform-origin: 0% 50%; display: flex; align-items: center; 
-            padding-left: 40px; color: white; font-weight: bold; font-size: 0.9rem; 
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.8); box-sizing: border-box; 
+            padding-left: clamp(20px, 8vw, 45px); 
+            color: white; font-weight: bold; 
+            font-size: clamp(0.6rem, 2.5vw, 0.9rem); 
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.8); 
+            box-sizing: border-box; 
             transition: all 0.3s ease;
+            pointer-events: none;
         }
 
-        /* දිනන තෑග්ග රෝදය ඇතුළේම Animate වීමට අදාළ CSS */
+        /* Winner Animation */
         @keyframes blinkWinner {
             0% { color: white; }
-            50% { color: #FFD700; text-shadow: 0 0 15px #FFD700, 0 0 25px red; font-size: 1.2rem; }
+            50% { color: var(--gold); text-shadow: 0 0 15px var(--gold), 0 0 25px red; transform: scale(1.1); }
             100% { color: white; }
         }
         .segment-label.winner-blink {
@@ -53,47 +109,63 @@
             z-index: 20;
         }
 
-        .btn-spin { background-color: #e67e22; color: white; padding: 15px 40px; border: none; border-radius: 50px; font-weight: bold; font-size: 1.3rem; cursor: pointer; transition: 0.2s; box-shadow: 0 5px 10px rgba(0,0,0,0.2); }
+        .btn-spin { 
+            background-color: var(--orange); 
+            color: white; 
+            padding: 15px clamp(30px, 10vw, 50px); 
+            border: none; border-radius: 50px; 
+            font-weight: bold; font-size: clamp(1rem, 4vw, 1.4rem); 
+            cursor: pointer; transition: 0.2s; 
+            box-shadow: 0 5px 10px rgba(0,0,0,0.2); 
+            touch-action: manipulation;
+        }
         .btn-spin:hover { background-color: #d35400; transform: scale(1.05); }
         .btn-spin:disabled { background-color: #bdc3c7; cursor: not-allowed; transform: none; }
 
-        #prizeModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 200; align-items: center; justify-content: center; }
-        .modal-content { background: white; padding: 40px; border-radius: 20px; border: 5px solid #FFD700; text-align: center; transform: scale(0.5); opacity: 0; transition: all 0.4s cubic-bezier(0.17, 0.89, 0.32, 1.49); max-width: 80%; }
+        /* Modal Responsive */
+        #prizeModal { 
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(0,0,0,0.85); z-index: 2000; 
+            align-items: center; justify-content: center; 
+        }
+        .modal-content { 
+            background: white; padding: clamp(20px, 8vw, 40px); 
+            border-radius: 20px; border: 5px solid var(--gold); 
+            text-align: center; transform: scale(0.5); opacity: 0; 
+            transition: all 0.4s cubic-bezier(0.17, 0.89, 0.32, 1.49); 
+            width: 85%; max-width: 450px; 
+        }
         .modal-content.show { transform: scale(1); opacity: 1; }
-        .prize-name { font-size: 2.5rem; color: #27ae60; font-weight: bold; margin: 20px 0; display: block; }
-        .close-btn { background: #8b0000; color: white; border: none; padding: 12px 35px; border-radius: 50px; cursor: pointer; font-weight: bold; font-size: 1rem; }
+        .prize-name { font-size: clamp(1.5rem, 6vw, 2.5rem); color: #27ae60; font-weight: bold; margin: 15px 0; display: block; }
+        
+        .close-btn { 
+            background: var(--primary-red); color: white; border: none; 
+            padding: 12px 35px; border-radius: 50px; cursor: pointer; 
+            font-weight: bold; font-size: 1rem; 
+        }
 
-        .confetti { position: absolute; width: 10px; height: 10px; z-index: 201; pointer-events: none; }
+        .confetti { position: absolute; width: 10px; height: 10px; z-index: 2001; pointer-events: none; }
 
+        /* Floating Music Button Responsive */
         .music-control {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background-color: #f1c40f;
-            color: #8b0000;
-            padding: 10px 20px;
-            border-radius: 50px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-weight: bold;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            z-index: 1000;
-            transition: 0.3s;
+            position: fixed; bottom: 20px; right: 20px;
+            background-color: #f1c40f; color: var(--primary-red);
+            padding: 10px 15px; border-radius: 50px;
+            cursor: pointer; display: flex; align-items: center;
+            gap: 8px; font-weight: bold; box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            z-index: 1000; font-size: 0.85rem;
         }
 
-        .music-control:hover {
-            transform: scale(1.1);
-            background-color: #fff;
+        .back-link { 
+            display: inline-block; margin: 30px 0; 
+            color: var(--primary-red); text-decoration: none; 
+            font-weight: bold; border-bottom: 2px solid var(--primary-red);
         }
 
-        .music-text {
-            font-size: 14px;
+        @media (max-width: 400px) {
+            .game-area { padding: 15px; }
+            .segment-label { padding-left: 20px; }
         }
-        .back-link { margin-top: 20px; color: #8b0000; text-decoration: none; font-weight: bold; border-bottom: 2px solid #8b0000;}
-
-
     </style>
 </head>
 <body>
@@ -107,7 +179,7 @@
                 <div class="wheel-inner" id="wheelInner"></div>
             </div>
         </div>
-        <button class="btn-spin" id="spinBtn" onclick="spinWheel()">වාසනාව බලමු!</button>
+        <button class="btn-spin" id="spinBtn" onclick="spinWheel()">වාසනාව බලමු! 🎡</button>
     </div>
 
     <div id="prizeModal">
@@ -118,20 +190,16 @@
             <button class="close-btn" onclick="closeModal()">නියමයි!</button>
         </div>
     </div>
+
+    <a href="games.html" class="back-link">← ආපසු මණ්ඩපයට</a>
 </div>
 
-<a href="games.html" class="back-link">← ආපසු ක්‍රීඩා මණ්ඩපයට</a>
+<audio id="avuruduAudio" loop><source src="avurudu_song.mp3" type="audio/mpeg"></audio>
 
-    
-
-<audio id="avuruduAudio" loop>
-        <source src="avurudu_song.mp3" type="audio/mpeg">
-    </audio>
-
-    <div class="music-control" onclick="toggleMusic()">
-        <span id="musicIcon">🎵</span>
-        <span id="musicText">සංගීතය ප්ලේ කරන්න</span>
-    </div>
+<div class="music-control" onclick="toggleMusic()">
+    <span id="musicIcon">🎵</span>
+    <span id="musicText">Music</span>
+</div>
 
 <script>
     const prizes = [
@@ -164,35 +232,27 @@
 
     function spinWheel() {
         spinBtn.disabled = true;
-        
-        // පරණ Animation අයින් කිරීම
         document.querySelectorAll('.segment-label').forEach(lbl => lbl.classList.remove('winner-blink'));
         
-        // අහඹු ලෙස රෝදය කරකැවීම
         const extraRounds = Math.floor(Math.random() * 5) + 5; 
         const randomDegrees = Math.floor(Math.random() * 360);
         currentRotation += (extraRounds * 360) + randomDegrees;
         
         wheel.style.transform = `rotate(${currentRotation}deg)`;
 
-        // රෝදය නැවතුණු පසු
         setTimeout(() => {
             const actualDegree = currentRotation % 360;
-            
-            // ගණනය කිරීම 100% නිවැරදිව පවත්වා ගැනීම
             const normalizedDegree = (360 - actualDegree + 22.5) % 360;
-            const winningIndex = Math.floor(normalizedDegree / sliceAngle);
+            const winningIndex = Math.floor((normalizedDegree + 360) % 360 / sliceAngle);
 
-            // රෝදය ඇතුළේම දිනපු තෑග්ග Animate කිරීම
             const labels = document.querySelectorAll('.segment-label');
             labels[winningIndex].classList.add('winner-blink');
 
-            // තත්පර 1.5ක් Animate වෙන්න දීලා Modal එක පෙන්වීම
             setTimeout(() => {
                 showPrize(prizes[winningIndex]);
             }, 1500);
 
-        }, 5000); // රෝදය කැරකෙන්න තත්පර 5ක් ගතවේ
+        }, 5000);
     }
 
     function showPrize(winner) {
@@ -225,7 +285,7 @@
     }
 
     function createConfetti() {
-        for (let i = 0; i < 70; i++) {
+        for (let i = 0; i < 50; i++) {
             const c = document.createElement('div');
             c.className = 'confetti';
             c.style.left = Math.random() * 100 + 'vw';
@@ -243,69 +303,26 @@
         }
     }
 
+    // Music Control Logic
+    const audio = document.getElementById("avuruduAudio");
+    const musicIcon = document.getElementById("musicIcon");
 
-    /* --- JavaScript Logic --- */
-        const audio = document.getElementById("avuruduAudio");
-        const musicIcon = document.getElementById("musicIcon");
-        const musicText = document.getElementById("musicText");
-
-        // 1. පේජ් එක ලෝඩ් වෙනකොට කලින් තත්වය බලමු
-        window.addEventListener("load", () => {
-            const isPlaying = localStorage.getItem("musicPlaying") === "true";
-            const lastTime = localStorage.getItem("musicTime");
-
-            if (lastTime) {
-                audio.currentTime = parseFloat(lastTime);
-            }
-
-            if (isPlaying) {
-                // බ්‍රවුසරය play එක block කළහොත් catch එක හරහා handle කරයි
-                audio.play().then(() => {
-                    updateUI(true);
-                }).catch(() => {
-                    console.log("Autoplay blocked. Waiting for user interaction.");
-                    localStorage.setItem("musicPlaying", "false");
-                    updateUI(false);
-                });
-            }
-        });
-
-        // 2. හැම තත්පරයකම සින්දුවේ වෙලාව සේව් කරගන්නවා
-        audio.addEventListener("timeupdate", () => {
-            localStorage.setItem("musicTime", audio.currentTime);
-        });
-
-        // 3. ප්ලේ/පෝස් කරන ෆන්ක්ෂන් එක
-        function toggleMusic() {
-            if (audio.paused) {
-                audio.play();
-                localStorage.setItem("musicPlaying", "true");
-                updateUI(true);
-            } else {
-                audio.pause();
-                localStorage.setItem("musicPlaying", "false");
-                updateUI(false);
-            }
+    function toggleMusic() {
+        if (audio.paused) {
+            audio.play(); localStorage.setItem("musicPlaying", "true"); musicIcon.innerText = "⏸️";
+        } else {
+            audio.pause(); localStorage.setItem("musicPlaying", "false"); musicIcon.innerText = "🎵";
         }
+    }
 
-        // 4. බටන් එකේ පෙනුම වෙනස් කරන එක
-        function updateUI(isPlaying) {
-            if (isPlaying) {
-                musicIcon.innerText = "⏸️";
-                musicText.innerText = "සංගීතය නවත්වන්න";
-            } else {
-                musicIcon.innerText = "🎵";
-                musicText.innerText = "සංගීතය ප්ලේ කරන්න";
-            }
-        }
+    window.addEventListener("load", () => {
+        const isPlaying = localStorage.getItem("musicPlaying") === "true";
+        const lastTime = localStorage.getItem("musicTime");
+        if (lastTime) audio.currentTime = parseFloat(lastTime);
+        if (isPlaying) { audio.play().catch(() => {}); musicIcon.innerText = "⏸️"; }
+    });
 
-        // 5. පේජ් එකෙන් පිටවන විට අවසන් තත්පරය සේව් කරගන්න
-        window.addEventListener("beforeunload", () => {
-            localStorage.setItem("musicTime", audio.currentTime);
-            localStorage.setItem("musicPlaying", !audio.paused);
-        });
-
-
+    audio.addEventListener("timeupdate", () => localStorage.setItem("musicTime", audio.currentTime));
 </script>
 </body>
 </html>
