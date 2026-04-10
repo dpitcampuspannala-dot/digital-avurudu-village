@@ -3,43 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ලිස්සන ගස - මිෂන් 10 (Fixed)</title>
+    <title>ලිස්සන ගස - මිෂන් 10 (Responsive)</title>
     <style>
+        :root {
+            --primary-color: #d35400;
+            --success-color: #27ae60;
+            --pole-color: #5d4037;
+        }
+
         body {
             margin: 0;
+            padding: 0;
             font-family: 'Segoe UI', sans-serif;
             background-color: #e0f7fa;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            height: 100vh;
-            overflow: hidden;
+            min-height: 100vh;
+            overflow-x: hidden;
         }
 
+        /* Header info responsive */
         .header-info {
+            width: 90%;
+            max-width: 400px;
             text-align: center;
             background: rgba(255, 255, 255, 0.9);
-            padding: 10px 30px;
-            border-radius: 20px;
-            margin-bottom: 10px;
+            padding: 10px 15px;
+            border-radius: 15px;
+            margin: 15px 0;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            z-index: 10;
         }
 
-        #game-container {
+        .header-info h2 { margin: 5px 0; font-size: 1.5rem; color: #8b0000; }
+        .header-info p { margin: 5px 0; font-size: 1rem; }
+
+        /* Game container responsive */
+        #game-area {
             position: relative;
-            width: 300px;
-            height: 450px;
+            width: 85vw;
+            max-width: 320px;
+            height: 50vh; /* Screen එකේ උසෙන් භාගයක් ගසට */
+            min-height: 300px;
+            max-height: 500px;
             background: linear-gradient(#81d4fa, #fff);
-            border-bottom: 15px solid #4caf50;
+            border-bottom: 12px solid #4caf50;
             display: flex;
             justify-content: center;
-            border-radius: 10px;
+            border-radius: 15px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.2);
         }
 
         #pole {
-            width: 25px;
+            width: 20px;
             height: 100%;
             background: linear-gradient(to right, #5d4037, #795548, #5d4037);
             position: relative;
@@ -48,8 +65,8 @@
         #flag { 
             position: absolute; 
             top: 5px; 
-            left: 15px; 
-            font-size: 45px; 
+            left: 12px; 
+            font-size: 2.5rem; 
             z-index: 2;
         }
 
@@ -57,24 +74,28 @@
             position: absolute;
             bottom: 0px; 
             left: -12px;
-            font-size: 45px;
-            /* Animation එක 0.05s ට අඩු කළා වේගවත් ප්‍රතිචාරයක් ලැබෙන්න */
+            font-size: 2.5rem;
             transition: bottom 0.05s ease-out; 
             z-index: 5;
+            user-select: none;
         }
 
+        /* Controls responsive */
         .controls {
-            margin-top: 25px;
+            width: 100%;
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 15px;
+            margin: 20px 0;
         }
 
         #climb-btn {
-            padding: 15px 60px;
-            font-size: 1.8rem;
-            background-color: #d35400;
+            width: 70%;
+            max-width: 250px;
+            padding: 15px 0;
+            font-size: 1.5rem;
+            background-color: var(--primary-color);
             color: white;
             border: none;
             border-radius: 50px;
@@ -82,6 +103,7 @@
             font-weight: bold;
             box-shadow: 0 6px #a04000;
             transition: 0.1s;
+            touch-action: manipulation; /* Mobile zoom වැළැක්වීමට */
         }
 
         #climb-btn:active { 
@@ -91,9 +113,9 @@
 
         #next-btn {
             display: none;
-            padding: 12px 40px;
-            font-size: 1.2rem;
-            background-color: #27ae60;
+            padding: 12px 30px;
+            font-size: 1.1rem;
+            background-color: var(--success-color);
             color: white;
             border: none;
             border-radius: 10px;
@@ -108,13 +130,31 @@
             100% { transform: scale(1); }
         }
 
-        .back-link { margin-top: 20px; color: #8b0000; text-decoration: none; font-weight: bold; border-bottom: 2px solid #8b0000;}
+        .back-link { margin-bottom: 30px; color: #8b0000; text-decoration: none; font-weight: bold; border-bottom: 2px solid #8b0000;}
 
         /* Music Styles */
         .music-control {
-            position: fixed; bottom: 20px; right: 20px;
-            background: #f1c40f; padding: 10px 20px; border-radius: 50px;
-            cursor: pointer; font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            position: fixed; 
+            bottom: 15px; 
+            right: 15px;
+            background: #f1c40f; 
+            padding: 8px 15px; 
+            border-radius: 50px;
+            cursor: pointer; 
+            font-weight: bold; 
+            font-size: 0.8rem;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* Landscape mode optimization for mobile */
+        @media (max-height: 500px) {
+            #game-area { height: 40vh; }
+            .header-info { margin: 5px 0; padding: 5px; }
+            h1 { font-size: 1rem; }
         }
     </style>
 </head>
@@ -122,10 +162,10 @@
 
     <div class="header-info">
         <h2 id="mission-title">Mission 1</h2>
-        <p id="message">කොඩිය අල්ලන්න! (වේගයෙන් නගින්න)</p>
+        <p id="message">කොඩිය අල්ලන්න! (නගින්න ඔබන්න)</p>
     </div>
 
-    <div id="game-container">
+    <div id="game-area">
         <div id="pole">
             <div id="flag">🚩</div> 
             <div id="player">🧗</div> 
@@ -134,54 +174,68 @@
 
     <div class="controls">
         <button id="climb-btn">නගින්න! 👆</button>
-        <button id="next-btn" onclick="startNextMission()">ඊළඟ මිෂන් එකට යන්න →</button>
+        <button id="next-btn" onclick="startNextMission()">ඊළඟ මිෂන් එක →</button>
+        <a href="games.html" class="back-link">← ආපසු මණ්ඩපයට</a>
     </div>
 
-    <audio id="avuruduAudio" loop>
-        <source src="avurudu_song.mp3" type="audio/mpeg">
-    </audio>
+    <audio id="avuruduAudio" loop><source src="avurudu_song.mp3" type="audio/mpeg"></audio>
 
     <div class="music-control" onclick="toggleMusic()">
         <span id="musicIcon">🎵</span>
-        <span id="musicText">සංගීතය ප්ලේ කරන්න</span>
+        <span id="musicText">Music</span>
     </div>
-
-    <a href="games.html" class="back-link">← ආපසු මණ්ඩපයට</a>
 
     <script>
         let currentMission = 1;
         let position = 0;
         let isWin = false;
         
-        // ප්ලේයර් කොඩිය ගාවටම යන උස (Container එක 450px නිසා 380px හොඳයි)
-        const TOUCH_POINT = 380; 
-
-        // ලිස්සන වේගයන් (මිෂන් එකෙන් එකට වැඩි වේ)
-        const missions = [
-            { slip: 3 }, { slip: 5 }, { slip: 8 }, 
-            { slip: 11 }, { slip: 14 }, { slip: 17 }, 
-            { slip: 20 }, { slip: 23 }, { slip: 26 }, 
-            { slip: 30 } // Mission 10
-        ];
-
+        const gameArea = document.getElementById('game-area');
         const player = document.getElementById('player');
         const message = document.getElementById('message');
         const missionTitle = document.getElementById('mission-title');
         const nextBtn = document.getElementById('next-btn');
         const climbBtn = document.getElementById('climb-btn');
 
-        // ප්ලේයර් නගින වේගය (නගින වේගය ලිස්සන වේගයට වඩා වැඩියෙන් තැබිය යුතුයි)
+        // ප්ලේයර් කොඩිය ගාවටම යන උස (Dynamic calculation)
+        function getTouchPoint() {
+            return gameArea.clientHeight - 65; 
+        }
+
+        let TOUCH_POINT = getTouchPoint();
+
+        // ලිස්සන වේගයන්
+        const missions = [
+            { slip: 2 }, { slip: 4 }, { slip: 6 }, 
+            { slip: 9 }, { slip: 12 }, { slip: 15 }, 
+            { slip: 18 }, { slip: 22 }, { slip: 26 }, 
+            { slip: 31 } 
+        ];
+
         const CLIMB_POWER = 35; 
 
-        climbBtn.addEventListener('click', () => {
+        // Window resize වෙද්දී TOUCH_POINT එක නැවත සකසනවා
+        window.addEventListener('resize', () => {
+            TOUCH_POINT = getTouchPoint();
+            if (isWin) position = TOUCH_POINT;
+            updateUI();
+        });
+
+        climbBtn.addEventListener('mousedown', climbAction);
+        climbBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault(); // Mobile double tap zoom වැළැක්වීමට
+            climbAction();
+        });
+
+        function climbAction() {
             if (isWin) return;
             position += CLIMB_POWER; 
             if (position > TOUCH_POINT) position = TOUCH_POINT;
             updateUI();
             checkCollision(); 
-        });
+        }
 
-        // ලිස්සන Logic එක (Gravity)
+        // ලිස්සන Logic එක
         setInterval(() => {
             if (!isWin && position > 0) {
                 position -= missions[currentMission - 1].slip;
@@ -197,17 +251,16 @@
         function checkCollision() {
             if (position >= TOUCH_POINT) {
                 isWin = true;
-                player.style.transition = "none"; 
                 player.style.bottom = TOUCH_POINT + "px"; 
 
-                message.innerText = "ජයග්‍රහණයයි! ඔබ කොඩිය අල්ලා ගත්තා! 🚩";
+                message.innerText = "ජයග්‍රහණයයි! 🚩";
                 message.style.color = "#27ae60";
                 climbBtn.style.display = "none";
                 
                 if(currentMission < 10) {
                     nextBtn.style.display = "block";
                 } else {
-                    message.innerText = "සියලුම මිෂන් අවසන්! ඔබ ලිස්සන ගසේ වීරයෙක්! 🏆";
+                    message.innerText = "සියලුම මිෂන් අවසන්! ඔබ වීරයෙක්! 🏆";
                 }
             }
         }
@@ -217,9 +270,8 @@
             position = 0;
             isWin = false;
             
-            player.style.transition = "bottom 0.05s ease-out"; 
             missionTitle.innerText = "Mission " + currentMission;
-            message.innerText = "කොඩිය අල්ලන්න! (ලිස්සන වේගය වැඩියි)";
+            message.innerText = "කොඩිය අල්ලන්න!";
             message.style.color = "black";
             nextBtn.style.display = "none";
             climbBtn.style.display = "block";
@@ -229,7 +281,6 @@
         // --- Music Controls ---
         const audio = document.getElementById("avuruduAudio");
         const musicIcon = document.getElementById("musicIcon");
-        const musicText = document.getElementById("musicText");
 
         window.addEventListener("load", () => {
             const isPlaying = localStorage.getItem("musicPlaying") === "true";
@@ -238,10 +289,6 @@
             if (isPlaying) {
                 audio.play().then(() => updateUI_Music(true)).catch(() => {});
             }
-        });
-
-        audio.addEventListener("timeupdate", () => {
-            localStorage.setItem("musicTime", audio.currentTime);
         });
 
         function toggleMusic() {
@@ -258,8 +305,11 @@
 
         function updateUI_Music(isPlaying) {
             musicIcon.innerText = isPlaying ? "⏸️" : "🎵";
-            musicText.innerText = isPlaying ? "සංගීතය නවත්වන්න" : "සංගීතය ප්ලේ කරන්න";
         }
+
+        audio.addEventListener("timeupdate", () => {
+            localStorage.setItem("musicTime", audio.currentTime);
+        });
     </script>
 </body>
 </html>
