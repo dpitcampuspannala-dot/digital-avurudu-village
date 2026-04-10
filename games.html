@@ -6,149 +6,168 @@
     <title>ක්‍රීඩා මණ්ඩපය - ඩිජිටල් අවුරුදු ගම්මානය</title>
     <style>
         /* --- CSS ආරම්භය --- */
-        
+        :root {
+            --primary-red: #8b0000;
+            --accent-gold: #FFD700;
+            --bg-color: #fdf2e9;
+            --success-green: #27ae60;
+        }
+
         body {
             margin: 0;
             padding: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #fdf2e9; /* අවුරුදු උත්සවයකට ගැලපෙන ලා කහ/තැඹිලි පැහැයක් */
+            background-color: var(--bg-color);
             color: #333;
+            overflow-x: hidden;
+            line-height: 1.6;
         }
 
         .container {
+            width: 90%;
             max-width: 1200px;
             margin: 0 auto;
-            padding: 40px 20px;
+            padding: clamp(20px, 5vw, 60px) 0;
         }
 
         .games-header {
             text-align: center;
-            margin-bottom: 50px;
+            margin-bottom: clamp(30px, 8vw, 60px);
         }
 
         .games-header h1 {
-            font-size: 3rem;
-            color: #8b0000; /* තද රතු පැහැය */
-            text-shadow: 1px 1px 5px rgba(0,0,0,0.1);
+            /* Screen එක අනුව අකුරු වෙනස් වේ */
+            font-size: clamp(2rem, 8vw, 3.5rem);
+            color: var(--primary-red);
+            text-shadow: 2px 2px 10px rgba(0,0,0,0.1);
             margin-bottom: 10px;
         }
 
         .games-header p {
-            font-size: 1.2rem;
+            font-size: clamp(1rem, 2.5vw, 1.2rem);
             color: #555;
+            max-width: 700px;
+            margin: 0 auto;
         }
 
-        /* ක්‍රීඩා ටික පේළියට සැකසීම (Grid) */
+        /* Responsive Grid System */
         .games-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: clamp(20px, 4vw, 35px);
         }
 
-        /* ක්‍රීඩා කාඩ්පත් (Game Cards) */
+        /* Game Cards */
         .game-card {
             background: white;
-            border-radius: 20px;
-            padding: 30px;
+            border-radius: 25px;
+            padding: clamp(20px, 4vw, 35px);
             text-align: center;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            border: 2px solid #FFD700; /* රන්වන් පැහැති දාරයක් */
+            box-shadow: 0 10px 25px rgba(0,0,0,0.06);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 2px solid var(--accent-gold);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
 
         .game-card:hover {
             transform: translateY(-10px);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.12);
             border-color: #e67e22;
         }
 
         .game-icon {
-            font-size: 60px;
-            margin-bottom: 20px;
+            font-size: clamp(50px, 10vw, 70px);
+            margin-bottom: 15px;
             display: block;
         }
 
         .game-title {
-            font-size: 1.6rem;
+            font-size: clamp(1.3rem, 4vw, 1.7rem);
             color: #d35400;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
             font-weight: bold;
         }
 
         .game-desc {
-            font-size: 1rem;
+            font-size: 0.95rem;
             color: #666;
             margin-bottom: 25px;
-            line-height: 1.5;
+            flex-grow: 1;
         }
 
-        /* සෙල්ලම් කරන්න බොත්තම */
+        /* Play Button */
         .play-btn {
             display: inline-block;
             padding: 12px 30px;
-            background-color: #27ae60; /* කොළ පැහැය */
+            background-color: var(--success-green);
             color: white;
             text-decoration: none;
             border-radius: 50px;
             font-weight: bold;
-            transition: background-color 0.3s;
+            font-size: 1rem;
+            transition: 0.3s;
+            box-shadow: 0 4px 0 #1e8449;
+            touch-action: manipulation;
         }
 
         .play-btn:hover {
             background-color: #219150;
+            transform: translateY(-2px);
         }
 
-        /* ආපසු යාමේ බොත්තම */
+        .play-btn:active {
+            transform: translateY(2px);
+            box-shadow: none;
+        }
+
+        /* Footer Navigation */
         .footer-nav {
             text-align: center;
-            margin-top: 50px;
+            margin-top: clamp(40px, 10vw, 70px);
         }
 
         .back-link {
-            color: #8b0000;
+            display: inline-block;
+            color: var(--primary-red);
             text-decoration: none;
             font-weight: bold;
             font-size: 1.1rem;
-            border-bottom: 2px solid transparent;
-            transition: border-bottom 0.3s;
+            border: 2px solid var(--primary-red);
+            padding: 10px 30px;
+            border-radius: 50px;
+            transition: all 0.3s;
         }
 
         .back-link:hover {
-            border-bottom: 2px solid #8b0000;
+            background: var(--primary-red);
+            color: white;
         }
 
-        /* පෝන් එකෙන් බලන විට වෙනස්කම් */
-        @media (max-width: 600px) {
-            .games-header h1 { font-size: 2.2rem; }
-            .container { padding: 20px; }
-        }
-
-
+        /* Floating Music Toggle Responsive */
         .music-control {
             position: fixed;
             bottom: 20px;
             right: 20px;
             background-color: #f1c40f;
-            color: #8b0000;
-            padding: 10px 20px;
+            color: var(--primary-red);
+            padding: 10px 15px;
             border-radius: 50px;
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             font-weight: bold;
             box-shadow: 0 4px 15px rgba(0,0,0,0.3);
             z-index: 1000;
             transition: 0.3s;
+            font-size: 0.85rem;
         }
 
         .music-control:hover {
             transform: scale(1.1);
             background-color: #fff;
-        }
-
-        .music-text {
-            font-size: 14px;
         }
 
         /* --- CSS අවසානය --- */
@@ -164,133 +183,118 @@
 
         <main class="games-grid">
             <div class="game-card">
-                <span class="game-icon">🌳</span>
-                <h2 class="game-title">ලිස්සන ගස</h2>
-                <p class="game-desc">අභියෝගය ජයගෙන ලිස්සන ගස මුදුනටම වේගයෙන් නැග ජයග්‍රහණය කරන්න.</p>
+                <div>
+                    <span class="game-icon">🌳</span>
+                    <h2 class="game-title">ලිස්සන ගස</h2>
+                    <p class="game-desc">අභියෝගය ජයගෙන ලිස්සන ගස මුදුනටම වේගයෙන් නැග ජයග්‍රහණය කරන්න.</p>
+                </div>
                 <a href="lissana-gasa.html" class="play-btn">සෙල්ලම් කරන්න</a>
             </div>
 
             <div class="game-card">
-                <span class="game-icon">🍯</span>
-                <h2 class="game-title">කණා මුට්ටි බිඳීම</h2>
-                <p class="game-desc">ඇස් බැඳගෙන නිවැරදි ඉලක්කයට පහර දී මුට්ටිය බිඳීමට උත්සාහ කරන්න.</p>
+                <div>
+                    <span class="game-icon">🏺</span>
+                    <h2 class="game-title">කණා මුට්ටි බිඳීම</h2>
+                    <p class="game-desc">ඇස් බැඳගෙන නිවැරදි ඉලක්කයට පහර දී මුට්ටිය බිඳීමට උත්සාහ කරන්න.</p>
+                </div>
                 <a href="kana-mutti.html" class="play-btn">සෙල්ලම් කරන්න</a>
             </div>
 
             <div class="game-card">
-                <span class="game-icon">🐘</span>
-                <h2 class="game-title">අලියාට ඇස තැබීම</h2>
-                <p class="game-desc">නිවැරදි ස්ථානය අනුමාන කර අලියාගේ ඇස සලකුණු කර ලකුණු ලබාගන්න.</p>
+                <div>
+                    <span class="game-icon">🐘</span>
+                    <h2 class="game-title">අලියාට ඇස තැබීම</h2>
+                    <p class="game-desc">නිවැරදි ස්ථානය අනුමාන කර අලියාගේ ඇස සලකුණු කර ලකුණු ලබාගන්න.</p>
+                </div>
                 <a href="aliyata-asa.html" class="play-btn">සෙල්ලම් කරන්න</a>
             </div>
 
             <div class="game-card">
-                <span class="game-icon">🤝</span>
-                <h2 class="game-title">කඹ ඇදීම</h2>
-                <p class="game-desc">ඔබේ කණ්ඩායමේ ශක්තිය යොදා ප්‍රතිවාදීන් පරදා ජයග්‍රහණය අත්කර ගන්න.</p>
+                <div>
+                    <span class="game-icon">🤝</span>
+                    <h2 class="game-title">කඹ ඇදීම</h2>
+                    <p class="game-desc">ඔබේ කණ්ඩායමේ ශක්තිය යොදා ප්‍රතිවාදීන් පරදා ජයග්‍රහණය අත්කර ගන්න.</p>
+                </div>
                 <a href="kaba-adeema.html" class="play-btn">සෙල්ලම් කරන්න</a>
             </div>
 
             <div class="game-card">
-                <span class="game-icon">🍈</span>
-                <h2 class="game-title">ගස්ලබු ඇට ගණන් කිරීම</h2>
-                <p class="game-desc">ගෙඩිය කපන්නේ නැතිව එහි ඇති ඇට ගණන හරියටම අනුමාන කර ජයග්‍රහණය කරන්න.</p>
+                <div>
+                    <span class="game-icon">🍈</span>
+                    <h2 class="game-title">ගස්ලබු ඇට ගණන් කිරීම</h2>
+                    <p class="game-desc">ගෙඩිය කපන්නේ නැතිව එහි ඇති ඇට ගණන හරියටම අනුමාන කර ජයග්‍රහණය කරන්න.</p>
+                </div>
                 <a href="gaslabu-ata.html" class="play-btn">සෙල්ලම් කරන්න</a>
             </div>
 
             <div class="game-card">
-                <span class="game-icon">🥚</span>
-                <h2 class="game-title">බිත්තර ඇල්ලීම</h2>
-                <p class="game-desc">අහසින් වැටෙන බිත්තර බිම වැටී බිඳෙන්න නොදී කුඩයට අල්ලාගෙන වැඩිම ලකුණු ලබාගන්න.</p>
+                <div>
+                    <span class="game-icon">🥚</span>
+                    <h2 class="game-title">බිත්තර ඇල්ලීම</h2>
+                    <p class="game-desc">අහසින් වැටෙන බිත්තර බිම වැටී බිඳෙන්න නොදී කූඩයට අල්ලාගෙන වැඩිම ලකුණු ලබාගන්න.</p>
+                </div>
                 <a href="biththara-allima.html" class="play-btn">සෙල්ලම් කරන්න</a>
             </div>
 
             <div class="game-card">
-                <span class="game-icon">🎡</span>
-                <h2 class="game-title">වාසනා චක්‍රය</h2>
-                <p class="game-desc">වර්ණවත් චක්‍රය කරකවා ඔබේ වාසනාව උරගා බලන්න. ඔබට ලැබෙන අවුරුදු තෑග්ග කුමක්ද?</p>
+                <div>
+                    <span class="game-icon">🎡</span>
+                    <h2 class="game-title">වාසනා චක්‍රය</h2>
+                    <p class="game-desc">වර්ණවත් චක්‍රය කරකවා ඔබේ වාසනාව උරගා බලන්න. ඔබට ලැබෙන තෑග්ග කුමක්ද?</p>
+                </div>
                 <a href="wasana-chakraya.html" class="play-btn">වාසනාව බලන්න</a>
             </div>
-
         </main>
-
-
-        <audio id="avuruduAudio" loop>
-            <source src="avurudu_song.mp3" type="audio/mpeg">
-        </audio>
-
-        <div class="music-control" onclick="toggleMusic()">
-            <span id="musicIcon">🎵</span>
-            <span id="musicText">සංගීතය ප්ලේ කරන්න</span>
-        </div>
-
-        <script>
-            /* --- JavaScript Logic --- */
-        const audio = document.getElementById("avuruduAudio");
-        const musicIcon = document.getElementById("musicIcon");
-        const musicText = document.getElementById("musicText");
-
-        // 1. පේජ් එක ලෝඩ් වෙනකොට කලින් තත්වය බලමු
-        window.addEventListener("load", () => {
-            const isPlaying = localStorage.getItem("musicPlaying") === "true";
-            const lastTime = localStorage.getItem("musicTime");
-
-            if (lastTime) {
-                audio.currentTime = parseFloat(lastTime);
-            }
-
-            if (isPlaying) {
-                // බ්‍රවුසරය play එක block කළහොත් catch එක හරහා handle කරයි
-                audio.play().then(() => {
-                    updateUI(true);
-                }).catch(() => {
-                    console.log("Autoplay blocked. Waiting for user interaction.");
-                    localStorage.setItem("musicPlaying", "false");
-                    updateUI(false);
-                });
-            }
-        });
-
-        // 2. හැම තත්පරයකම සින්දුවේ වෙලාව සේව් කරගන්නවා
-        audio.addEventListener("timeupdate", () => {
-            localStorage.setItem("musicTime", audio.currentTime);
-        });
-
-        // 3. ප්ලේ/පෝස් කරන ෆන්ක්ෂන් එක
-        function toggleMusic() {
-            if (audio.paused) {
-                audio.play();
-                localStorage.setItem("musicPlaying", "true");
-                updateUI(true);
-            } else {
-                audio.pause();
-                localStorage.setItem("musicPlaying", "false");
-                updateUI(false);
-            }
-        }
-
-        // 4. බටන් එකේ පෙනුම වෙනස් කරන එක
-        function updateUI(isPlaying) {
-            if (isPlaying) {
-                musicIcon.innerText = "⏸️";
-                musicText.innerText = "සංගීතය නවත්වන්න";
-            } else {
-                musicIcon.innerText = "🎵";
-                musicText.innerText = "සංගීතය ප්ලේ කරන්න";
-            }
-        }
-
-        // 5. පේජ් එකෙන් පිටවන විට අවසන් තත්පරය සේව් කරගන්න
-        window.addEventListener("beforeunload", () => {
-            localStorage.setItem("musicTime", audio.currentTime);
-            localStorage.setItem("musicPlaying", !audio.paused);
-        });
-        </script>
 
         <footer class="footer-nav">
             <a href="index.html" class="back-link">← නැවත මුල් පිටුවට</a>
         </footer>
     </div>
 
+    <audio id="avuruduAudio" loop><source src="avurudu_song.mp3" type="audio/mpeg"></audio>
+
+    <div class="music-control" onclick="toggleMusic()">
+        <span id="musicIcon">🎵</span>
+        <span id="musicText">Music</span>
+    </div>
+
+    <script>
+        /* --- JavaScript Logic --- */
+        const audio = document.getElementById("avuruduAudio");
+        const musicIcon = document.getElementById("musicIcon");
+        const musicText = document.getElementById("musicText");
+
+        window.addEventListener("load", () => {
+            const isPlaying = localStorage.getItem("musicPlaying") === "true";
+            const lastTime = localStorage.getItem("musicTime");
+            if (lastTime) audio.currentTime = parseFloat(lastTime);
+            if (isPlaying) {
+                audio.play().then(() => updateUI(true)).catch(() => {
+                    localStorage.setItem("musicPlaying", "false");
+                    updateUI(false);
+                });
+            }
+        });
+
+        audio.addEventListener("timeupdate", () => localStorage.setItem("musicTime", audio.currentTime));
+
+        function toggleMusic() {
+            if (audio.paused) {
+                audio.play(); localStorage.setItem("musicPlaying", "true"); updateUI(true);
+            } else {
+                audio.pause(); localStorage.setItem("musicPlaying", "false"); updateUI(false);
+            }
+        }
+
+        function updateUI(isPlaying) {
+            musicIcon.innerText = isPlaying ? "⏸️" : "🎵";
+            musicText.innerText = isPlaying ? "Music Off" : "Music On";
+        }
+
+        window.addEventListener("beforeunload", () => {
+            localStorage.setItem("musicTime", audio.currentTime);
+            localStorage.setItem("musicPlaying", !audio.paused);
+        });
+    </script>
 </body>
 </html>
