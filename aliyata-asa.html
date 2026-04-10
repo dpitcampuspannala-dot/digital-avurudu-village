@@ -5,47 +5,61 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>අලියාට ඇස තැබීම - ඩිජිටල් අවුරුදු</title>
     <style>
+        :root {
+            --primary-green: #2e7d32;
+            --accent-orange: #ef6c00;
+            --elephant-gray: #95a5a6;
+        }
+
         body {
             margin: 0;
+            padding: 0;
             font-family: 'Segoe UI', sans-serif;
             background-color: #f1f8e9;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            height: 100vh;
-            overflow: hidden;
+            min-height: 100vh;
+            overflow-x: hidden;
         }
 
+        /* Header Info Responsive */
         .header-info {
+            width: 90%;
+            max-width: 500px;
             text-align: center;
             background: rgba(255, 255, 255, 0.95);
-            padding: 15px 40px;
-            border-radius: 30px;
-            margin-bottom: 20px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-            border: 2px solid #4caf50;
+            padding: 10px 20px;
+            border-radius: 20px;
+            margin: 15px 0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border: 2px solid var(--primary-green);
+            z-index: 20;
         }
+        .header-info h2 { margin: 5px 0; font-size: clamp(1.2rem, 4vw, 1.8rem); color: var(--primary-green); }
+        .header-info p { margin: 5px 0; font-size: clamp(0.9rem, 3vw, 1.1rem); font-weight: bold; }
 
-        #game-area {
+        /* Game Area Responsive (4:3 Aspect Ratio) */
+        #game-container {
             position: relative;
-            width: 600px;
-            height: 450px;
+            width: 95vw;
+            max-width: 600px;
+            aspect-ratio: 4 / 3;
             background-color: #ffffff;
-            border: 10px solid #5d4037;
-            border-radius: 25px;
+            border: 8px solid #5d4037;
+            border-radius: 20px;
             cursor: crosshair;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
             overflow: hidden;
             display: flex;
             justify-content: center;
             align-items: center;
+            touch-action: none; /* Mobile scroll වැළැක්වීමට */
         }
 
-        /* 🐘 හෑඩි දැඩි අලියා (Strong SVG Elephant) */
         #elephant-svg {
-            width: 95%;
-            height: auto;
+            width: 100%;
+            height: 100%;
             transition: opacity 0.5s;
         }
 
@@ -60,81 +74,83 @@
             justify-content: center;
             align-items: center;
             color: #ffca28;
-            font-size: 1.8rem;
+            font-size: clamp(1rem, 5vw, 1.8rem);
             font-weight: bold;
             z-index: 10;
             text-align: center;
+            padding: 20px;
+            box-sizing: border-box;
         }
 
-        /* ඇස් සලකුණු */
+        /* ඇස් සලකුණු (Responsive Size) */
         .eye {
             position: absolute;
-            width: 20px;
-            height: 20px;
+            width: clamp(15px, 4vw, 22px);
+            height: clamp(15px, 4vw, 22px);
             border-radius: 50%;
             display: none;
             z-index: 5;
             box-shadow: 0 0 10px rgba(0,0,0,0.5);
+            transform: translate(-50%, -50%); /* මැදටම සෙට් වෙන්න */
         }
 
-        #target-eye { background: #ff1744; border: 3px solid white; } 
-        #player-eye { background: #212121; border: 3px solid white; } 
+        #target-eye { background: #ff1744; border: 2px solid white; } 
+        #player-eye { background: #212121; border: 2px solid white; } 
 
-        .controls { margin-top: 25px; display: flex; gap: 20px; }
+        /* Controls */
+        .controls {
+            width: 90%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
         .btn { 
-            padding: 15px 35px; 
-            font-size: 1.2rem; 
+            padding: 12px 30px; 
+            font-size: 1.1rem; 
             border: none; 
             border-radius: 50px; 
             cursor: pointer; 
             font-weight: bold; 
             color: white; 
             box-shadow: 0 5px #777;
+            width: 80%;
+            max-width: 280px;
         }
         .btn:active { transform: translateY(3px); box-shadow: 0 2px #777; }
         
-        .start-btn { background-color: #ef6c00; }
-        #next-btn { display: none; background-color: #2e7d32; }
+        .start-btn { background-color: var(--accent-orange); }
+        #next-btn { display: none; background-color: var(--primary-green); }
         
-        .back-link { margin-top: 25px; color: #2e7d32; text-decoration: none; font-weight: bold; }
+        .back-link { margin-bottom: 30px; color: var(--primary-green); text-decoration: none; font-weight: bold; border-bottom: 2px solid var(--primary-green); }
 
+        /* Music */
         .music-control {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background-color: #f1c40f;
-            color: #8b0000;
-            padding: 10px 20px;
-            border-radius: 50px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-weight: bold;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            z-index: 1000;
-            transition: 0.3s;
+            position: fixed; bottom: 20px; right: 20px;
+            background-color: #f1c40f; color: #8b0000;
+            padding: 10px 15px; border-radius: 50px;
+            cursor: pointer; display: flex; align-items: center;
+            gap: 8px; font-weight: bold; box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            z-index: 1000; font-size: 0.8rem;
         }
 
-        .music-control:hover {
-            transform: scale(1.1);
-            background-color: #fff;
+        /* Landscape fix for mobile */
+        @media (max-height: 500px) {
+            #game-container { max-width: 400px; }
+            .header-info { margin: 5px 0; padding: 5px; }
         }
-
-        .music-text {
-            font-size: 14px;
-        }
-
     </style>
 </head>
 <body>
 
     <div class="header-info">
-        <h2 id="mission-title" style="margin:0; color:#2e7d32;">මිෂන් 1</h2>
-        <p id="message" style="margin:5px 0 0 0;">අලියාගේ ඇස තිබිය යුතු තැන හොඳින් බලාගන්න!</p>
+        <h2 id="mission-title">මිෂන් 1</h2>
+        <p id="message">අලියාගේ ඇස තියන තැන බලාගන්න!</p>
     </div>
 
-    <div id="game-area" onclick="placeEye(event)">
+    <div id="game-container" onclick="placeEye(event)" ontouchstart="handleTouch(event)">
         <svg id="elephant-svg" viewBox="0 0 600 450" xmlns="http://www.w3.org/2000/svg">
             <rect x="300" y="320" width="60" height="90" rx="10" fill="#7f8c8d" />
             <rect x="420" y="320" width="60" height="90" rx="10" fill="#7f8c8d" />
@@ -153,40 +169,36 @@
 
     <div class="controls">
         <button id="start-btn" class="btn start-btn" onclick="startBlindfold()">ඇස තැබීම ආරම්භ කරන්න</button>
-        <button id="next-btn" class="btn" onclick="startNextMission()">ඊළඟ මිෂන් එකට යන්න →</button>
+        <button id="next-btn" class="btn" onclick="startNextMission()">ඊළඟ මිෂන් එක →</button>
+        <a href="games.html" class="back-link">← ආපසු මණ්ඩපයට</a>
     </div>
 
-
-    <audio id="avuruduAudio" loop>
-        <source src="avurudu_song.mp3" type="audio/mpeg">
-    </audio>
+    <audio id="avuruduAudio" loop><source src="avurudu_song.mp3" type="audio/mpeg"></audio>
 
     <div class="music-control" onclick="toggleMusic()">
         <span id="musicIcon">🎵</span>
-        <span id="musicText">සංගීතය ප්ලේ කරන්න</span>
+        <span id="musicText">Music</span>
     </div>
-
-    <a href="games.html" class="back-link">← ආපසු මණ්ඩපයට</a>
 
     <script>
         let currentMission = 1;
         let canPlace = false;
 
-        // 🎯 ඇස තිබිය යුතු නිවැරදි ස්ථානය - දැන් තවත් ඉහළට (RealEyeY = 155)
-        const realEyeX = 180; 
-        const realEyeY = 155; 
+        // 🎯 නිවැරදි ස්ථානය ප්‍රතිශතයක් ලෙස (600x450 අනුපාතයට අනුව)
+        const targetXPercent = (180 / 600) * 100; // 30%
+        const targetYPercent = (155 / 450) * 100; // 34.44%
 
         const missions = [
-            { previewTime: 5000, tolerance: 35 },
-            { previewTime: 4000, tolerance: 30 },
-            { previewTime: 3000, tolerance: 25 },
-            { previewTime: 2500, tolerance: 20 },
-            { previewTime: 2000, tolerance: 18 },
-            { previewTime: 1500, tolerance: 15 },
-            { previewTime: 1000, tolerance: 12 },
-            { previewTime: 800, tolerance: 10 },
-            { previewTime: 600, tolerance: 8 },
-            { previewTime: 400, tolerance: 6 }
+            { preview: 4000, tolerance: 7 }, // Tolerance දැන් ප්‍රතිශතයක් ලෙස
+            { preview: 3000, tolerance: 6 },
+            { preview: 2500, tolerance: 5 },
+            { preview: 2000, tolerance: 4.5 },
+            { preview: 1500, tolerance: 4 },
+            { preview: 1200, tolerance: 3.5 },
+            { preview: 1000, tolerance: 3 },
+            { preview: 800, tolerance: 2.5 },
+            { preview: 600, tolerance: 2 },
+            { preview: 400, tolerance: 1.5 }
         ];
 
         function startBlindfold() {
@@ -195,56 +207,73 @@
             const startBtn = document.getElementById('start-btn');
             
             startBtn.style.visibility = "hidden";
-            document.getElementById('message').innerText = "අලියාව හොඳින් මතක තබා ගන්න...";
+            document.getElementById('message').innerText = "මතක තබා ගන්න...";
 
             setTimeout(() => {
                 elephant.style.opacity = "0";
                 blindfold.style.display = "flex";
                 canPlace = true;
-                document.getElementById('message').innerText = "දැන් මතකයෙන් ඇස තියන්න!";
-            }, missions[currentMission - 1].previewTime);
+                document.getElementById('message').innerText = "දැන් ඇස තියන්න!";
+            }, missions[currentMission - 1].preview);
         }
 
-        function placeEye(event) {
-            if (!canPlace) return;
+        // Mobile touch support
+        function handleTouch(e) {
+            if (canPlace) {
+                const touch = e.touches[0];
+                processClick(touch.clientX, touch.clientY);
+            }
+        }
 
-            const rect = document.getElementById('game-area').getBoundingClientRect();
-            const x = event.clientX - rect.left;
-            const y = event.clientY - rect.top;
+        function placeEye(e) {
+            if (canPlace) {
+                processClick(e.clientX, e.clientY);
+            }
+        }
+
+        function processClick(clientX, clientY) {
+            const container = document.getElementById('game-container');
+            const rect = container.getBoundingClientRect();
+            
+            // ක්ලික් කළ ස්ථානය ප්‍රතිශතයක් ලෙස ගණනය කිරීම
+            const clickXPercent = ((clientX - rect.left) / rect.width) * 100;
+            const clickYPercent = ((clientY - rect.top) / rect.height) * 100;
 
             const playerEye = document.getElementById('player-eye');
-            playerEye.style.left = (x - 10) + "px";
-            playerEye.style.top = (y - 10) + "px";
+            playerEye.style.left = clickXPercent + "%";
+            playerEye.style.top = clickYPercent + "%";
             playerEye.style.display = "block";
 
             const targetEye = document.getElementById('target-eye');
-            targetEye.style.left = (realEyeX - 10) + "px";
-            targetEye.style.top = (realEyeY - 10) + "px";
+            targetEye.style.left = targetXPercent + "%";
+            targetEye.style.top = targetYPercent + "%";
             targetEye.style.display = "block";
 
             document.getElementById('elephant-svg').style.opacity = "1";
             document.getElementById('blindfold').style.display = "none";
             
             canPlace = false;
-            checkResult(x, y);
+            checkResult(clickXPercent, clickYPercent);
         }
 
         function checkResult(px, py) {
-            const distance = Math.sqrt(Math.pow(px - realEyeX, 2) + Math.pow(py - realEyeY, 2));
+            // පයිතගරස් ප්‍රමේයය භාවිතයෙන් දුර ගණනය කිරීම (ප්‍රතිශත ඒකක වලින්)
+            const distance = Math.sqrt(Math.pow(px - targetXPercent, 2) + Math.pow(py - targetYPercent, 2));
             const tolerance = missions[currentMission - 1].tolerance;
 
+            const msg = document.getElementById('message');
             if (distance <= tolerance) {
-                document.getElementById('message').innerText = "නියමයි! ඔබ ඇස තැබුවේ හරියටම නිවැරදි තැනටයි! 🎉";
-                document.getElementById('message').style.color = "#2e7d32";
+                msg.innerText = "නියමයි! නිවැරදියි! 🎉";
+                msg.style.color = "#2e7d32";
                 if (currentMission < 10) {
                     document.getElementById('next-btn').style.display = "block";
                 } else {
-                    document.getElementById('message').innerText = "සුභ පැතුම්! ඔබ අලියාට ඇස තැබීමේ ශූරයෙක්! 🏆";
+                    msg.innerText = "ඔබ අලියාට ඇස තැබීමේ ශූරයෙක්! 🏆";
                 }
             } else {
-                document.getElementById('message').innerText = "අපොයි, ඇස තැබූ තැන වැරදියි! ❌";
-                document.getElementById('message').style.color = "#d32f2f";
-                setTimeout(resetMission, 2500);
+                msg.innerText = "වැරදියි! නැවත උත්සාහ කරන්න. ❌";
+                msg.style.color = "#d32f2f";
+                setTimeout(resetMission, 2000);
             }
         }
 
@@ -252,7 +281,7 @@
             document.getElementById('player-eye').style.display = "none";
             document.getElementById('target-eye').style.display = "none";
             document.getElementById('start-btn').style.visibility = "visible";
-            document.getElementById('message').innerText = "නැවත උත්සාහ කරන්න!";
+            document.getElementById('message').innerText = "සූදානම් වන්න!";
             document.getElementById('message').style.color = "black";
             canPlace = false;
         }
@@ -264,66 +293,21 @@
             resetMission();
         }
 
-
-        /* --- JavaScript Logic --- */
+        // Music Logic
         const audio = document.getElementById("avuruduAudio");
         const musicIcon = document.getElementById("musicIcon");
-        const musicText = document.getElementById("musicText");
 
-        // 1. පේජ් එක ලෝඩ් වෙනකොට කලින් තත්වය බලමු
-        window.addEventListener("load", () => {
-            const isPlaying = localStorage.getItem("musicPlaying") === "true";
-            const lastTime = localStorage.getItem("musicTime");
-
-            if (lastTime) {
-                audio.currentTime = parseFloat(lastTime);
-            }
-
-            if (isPlaying) {
-                // බ්‍රවුසරය play එක block කළහොත් catch එක හරහා handle කරයි
-                audio.play().then(() => {
-                    updateUI(true);
-                }).catch(() => {
-                    console.log("Autoplay blocked. Waiting for user interaction.");
-                    localStorage.setItem("musicPlaying", "false");
-                    updateUI(false);
-                });
-            }
-        });
-
-        // 2. හැම තත්පරයකම සින්දුවේ වෙලාව සේව් කරගන්නවා
-        audio.addEventListener("timeupdate", () => {
-            localStorage.setItem("musicTime", audio.currentTime);
-        });
-
-        // 3. ප්ලේ/පෝස් කරන ෆන්ක්ෂන් එක
         function toggleMusic() {
             if (audio.paused) {
-                audio.play();
-                localStorage.setItem("musicPlaying", "true");
-                updateUI(true);
+                audio.play(); localStorage.setItem("musicPlaying", "true"); musicIcon.innerText = "⏸️";
             } else {
-                audio.pause();
-                localStorage.setItem("musicPlaying", "false");
-                updateUI(false);
+                audio.pause(); localStorage.setItem("musicPlaying", "false"); musicIcon.innerText = "🎵";
             }
         }
 
-        // 4. බටන් එකේ පෙනුම වෙනස් කරන එක
-        function updateUI(isPlaying) {
-            if (isPlaying) {
-                musicIcon.innerText = "⏸️";
-                musicText.innerText = "සංගීතය නවත්වන්න";
-            } else {
-                musicIcon.innerText = "🎵";
-                musicText.innerText = "සංගීතය ප්ලේ කරන්න";
-            }
-        }
-
-        // 5. පේජ් එකෙන් පිටවන විට අවසන් තත්පරය සේව් කරගන්න
-        window.addEventListener("beforeunload", () => {
-            localStorage.setItem("musicTime", audio.currentTime);
-            localStorage.setItem("musicPlaying", !audio.paused);
+        window.addEventListener("load", () => {
+            const isPlaying = localStorage.getItem("musicPlaying") === "true";
+            if (isPlaying) { audio.play().catch(() => {}); musicIcon.innerText = "⏸️"; }
         });
     </script>
 </body>
