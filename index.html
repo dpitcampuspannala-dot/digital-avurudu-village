@@ -3,269 +3,224 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>කැට ගැසීම - ඩිජිටල් අවුරුදු ගම්මානය</title>
+    <title>ඩිජිටල් අවුරුදු ගම්මානය - 2026</title>
     <style>
+        /* මූලික සැකසුම් */
         :root {
             --primary-red: #8b0000;
-            --gold: #FFD700;
-            --orange: #e67e22;
-            --wood: #a04000;
+            --gold: #f1c40f;
+            --white: #fff9f0;
         }
 
         body { 
             margin: 0; padding: 0; 
-            font-family: 'Segoe UI', sans-serif; 
-            background-color: #fdf2e9; 
-            text-align: center; 
-            color: #333; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background-color: var(--white); 
             overflow-x: hidden; 
+            line-height: 1.6;
+        }
+        
+        /* Header & Hero Section */
+        header { 
+            background: linear-gradient(rgba(139, 0, 0, 0.75), rgba(139, 0, 0, 0.75)), url('avurudu_bg.jpg'); 
+            background-size: cover; 
+            background-position: center; 
+            height: 100vh; 
+            min-height: 500px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            text-align: center; color: var(--gold); 
+            position: relative;
+            padding: 0 20px;
         }
 
-        .container { 
-            width: 95%; 
-            max-width: 800px; 
-            margin: 20px auto; 
-            padding: 10px; 
-            box-sizing: border-box;
+        /* About Menu Dot (⋮) */
+        .about-trigger {
+            position: absolute; top: 20px; right: 20px; cursor: pointer;
+            font-size: clamp(30px, 5vw, 40px); color: var(--gold); 
+            transition: 0.3s; z-index: 1001;
+            line-height: 1;
+            background: rgba(0,0,0,0.2);
+            border-radius: 50%;
+            width: 50px; height: 50px;
+            display: flex; align-items: center; justify-content: center;
         }
+        .about-trigger:hover { transform: rotate(90deg); color: #fff; background: var(--primary-red); }
 
+        /* Fluid Typography */
         h1 { 
-            color: var(--primary-red); 
-            margin-bottom: 20px; 
-            font-size: clamp(1.8rem, 5vw, 2.5rem); 
+            font-size: clamp(2.2rem, 8vw, 4.5rem); 
+            margin: 0 0 10px 0; 
+            text-shadow: 3px 3px 15px rgba(0,0,0,0.5); 
+            font-weight: 800;
         }
-        
-        /* Game Area */
-        .game-area { 
-            background: white; 
-            padding: clamp(20px, 5vw, 40px); 
-            border-radius: 20px; 
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1); 
-            border: 4px solid var(--gold); 
-            position: relative; 
+        p.sub-text { 
+            font-size: clamp(1rem, 3vw, 1.4rem); 
+            color: #fff; 
+            margin-bottom: 40px; 
+            max-width: 800px;
+        }
+
+        /* Button Container */
+        .btn-container {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
             width: 100%;
-            box-sizing: border-box;
         }
 
-        /* Bet Selection */
-        .bet-container { margin-bottom: 30px; }
-        .bet-title { font-weight: bold; margin-bottom: 10px; display: block; font-size: 1.1rem;}
-        .bet-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
-        
-        .bet-btn {
-            width: 50px; height: 50px; border-radius: 10px; border: 2px solid transparent;
-            background: #eee; font-size: 1.5rem; font-weight: bold; cursor: pointer; transition: 0.2s;
-            user-select: none;
-        }
-        .bet-btn:hover { background: #ddd; }
-        .bet-btn.selected { background: var(--gold); color: var(--primary-red); border-color: var(--primary-red); transform: scale(1.1); }
-
-        /* Keta Display */
-        .keta-display { margin: 40px 0; min-height: 120px; position: relative; display: flex; justify-content: center; align-items: center;}
-        
-        #ketaResult { font-size: 6rem; transition: transform 0.5s; opacity: 1;}
-        
-        /* Animation class for rolling keta */
-        .keta-rolling { animation: rollKeta 0.1s infinite; opacity: 0.8;}
-        @keyframes rollKeta {
-            0% { transform: rotate(0deg) scale(1); }
-            50% { transform: rotate(180deg) scale(1.1); }
-            100% { transform: rotate(360deg) scale(1); }
+        /* Explore Buttons */
+        .explore-btn {
+            padding: clamp(12px, 3vw, 16px) clamp(25px, 5vw, 40px); 
+            border-radius: 50px; text-decoration: none; 
+            font-size: clamp(0.9rem, 2.5vw, 1.2rem); 
+            font-weight: bold; transition: 0.3s; 
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3); border: 2px solid transparent;
+            display: inline-block;
         }
 
-        /* Result Popup inside Keta Display */
-        #resultMessage { 
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(255,255,255,0.9); border-radius: 10px;
-            display: none; flex-direction: column; align-items: center; justify-content: center;
-            z-index: 5; font-size: 1.5rem; font-weight: bold;
-        }
+        .village-btn { background-color: var(--gold); color: var(--primary-red); }
+        .village-btn:hover { background-color: #fff; transform: translateY(-3px); }
 
-        /* Toss Button */
-        .btn-toss { 
-            background-color: var(--orange); 
-            color: white; 
-            padding: 15px clamp(30px, 10vw, 50px); 
-            border: none; border-radius: 50px; 
-            font-weight: bold; font-size: clamp(1rem, 4vw, 1.3rem); 
-            cursor: pointer; transition: 0.2s; 
-            box-shadow: 0 5px 10px rgba(0,0,0,0.2); 
-            touch-action: manipulation;
-        }
-        .btn-toss:hover { background-color: #d35400; transform: scale(1.05); }
-        .btn-toss:disabled { background-color: #bdc3c7; cursor: not-allowed; transform: none; }
+        .games-btn { background-color: transparent; color: var(--gold); border: 2px solid var(--gold); }
+        .games-btn:hover { background-color: var(--gold); color: var(--primary-red); transform: translateY(-3px); }
 
-        /* Points and Score */
-        .score-board { margin-top: 30px; font-weight: bold; font-size: 1.2rem; color: #555;}
-        #pointsCount { color: var(--wood); font-size: 1.5rem;}
-
-        .back-link { 
-            display: inline-block; margin: 30px 0; 
-            color: var(--primary-red); text-decoration: none; 
-            font-weight: bold; border-bottom: 2px solid var(--primary-red);
-        }
-
-        /* Floating Music Button Responsive */
+        /* Floating Music Toggle */
         .music-control {
-            position: fixed; bottom: 20px; right: 20px;
+            position: fixed; bottom: 25px; right: 25px; 
             background-color: var(--gold); color: var(--primary-red);
-            padding: 10px 15px; border-radius: 50px;
-            cursor: pointer; display: flex; align-items: center;
-            gap: 8px; font-weight: bold; box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            z-index: 1000; font-size: 0.85rem;
+            padding: 10px 20px; border-radius: 50px; cursor: pointer; 
+            display: flex; align-items: center; gap: 8px; 
+            font-weight: bold; box-shadow: 0 5px 20px rgba(0,0,0,0.4); 
+            z-index: 1000;
+            font-size: 0.9rem;
+            transition: 0.3s;
+        }
+        .music-control:hover { transform: scale(1.05); background: #fff; }
+
+        /* About Modal Responsive */
+        .modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); z-index: 2000; align-items: center; justify-content: center;
+            padding: 20px; box-sizing: border-box;
+        }
+        .modal-content {
+            background: white; padding: clamp(20px, 5vw, 40px); 
+            border-radius: 25px; max-width: 550px; width: 100%;
+            text-align: center; border: 5px solid var(--gold); 
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .close-modal { 
+            position: sticky; top: -10px; float: right; 
+            font-size: 35px; cursor: pointer; color: var(--primary-red); 
+            font-weight: bold; z-index: 2001; 
+        }
+        
+        .dp-logo { width: clamp(120px, 20vw, 180px); margin-bottom: 15px; border-radius: 10px; }
+        .modal-content h2 { color: var(--primary-red); font-size: clamp(1.2rem, 4vw, 1.8rem); margin-top: 10px; }
+        .modal-content p { font-size: 0.95rem; color: #444; line-height: 1.7; text-align: justify; }
+
+        .social-links { 
+            margin-top: 25px; 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); 
+            gap: 10px; 
+        }
+        .social-link {
+            color: var(--primary-red); font-weight: bold; text-decoration: none; 
+            border: 2px solid var(--primary-red); padding: 8px 10px; 
+            border-radius: 8px; font-size: 0.85rem; transition: 0.2s;
+        }
+        .social-link:hover { background: var(--primary-red); color: #fff; }
+
+        /* Mobile specific adjustments */
+        @media (max-width: 480px) {
+            .btn-container { flex-direction: column; width: 80%; }
+            .explore-btn { width: 100%; box-sizing: border-box; }
+            .music-control { padding: 10px; border-radius: 50%; }
+            .music-control span:last-child { display: none; } /* Mobile වලදී Text එක හංගනවා */
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>අවුරුදු කැට ගැසීම</h1>
-    
-    <div class="game-area">
-        <div class="bet-container">
-            <span class="bet-title">ඔබේ අංකය තෝරන්න:</span>
-            <div class="bet-buttons">
-                <button class="bet-btn" onclick="selectNumber(1)">1</button>
-                <button class="bet-btn" onclick="selectNumber(2)">2</button>
-                <button class="bet-btn" onclick="selectNumber(3)">3</button>
-                <button class="bet-btn" onclick="selectNumber(4)">4</button>
-                <button class="bet-btn" onclick="selectNumber(5)">5</button>
-                <button class="bet-btn" onclick="selectNumber(6)">6</button>
-            </div>
+    <div class="about-trigger" onclick="openAbout()">⋮</div>
+
+    <header>
+        <h1>අවුරුදු අසිරිය - 2026 🌞</h1>
+        <p class="sub-text">සිරිත් විරිත් සහ සාම්ප්‍රදායික උරුමයේ ඩිජිටල් අත්දැකීම</p>
+        
+        <div class="btn-container">
+            <a href="avurudu_info.html" class="explore-btn village-btn">ගම්මානයට පිවිසෙන්න</a>
+            <a href="games.html" class="explore-btn games-btn">ජන ක්‍රීඩා පිටිය</a>
         </div>
+    </header>
 
-        <div class="keta-display">
-            <div id="ketaResult">🎲</div>
-            <div id="resultMessage">
-                <span id="outcomeText"></span>
-                <span id="pointsText"></span>
+    <audio id="avuruduAudio" loop>
+        <source src="avurudu_song.mp3" type="audio/mpeg">
+    </audio>
+
+    <div class="music-control" onclick="toggleMusic()">
+        <span id="musicIcon">🎵</span> <span>සංගීතය</span>
+    </div>
+
+    <div id="aboutModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeAbout()">&times;</span>
+            <img src="DP.png" alt="DP Education" class="dp-logo" onerror="this.src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR61f8HlG0qf_K3hT9i-7kG3y_L3I5I5fS0uA&s'">
+            <h2>DP Education Bulathkohupitiya</h2>
+            <p>
+                <b>DP Education Bulathkohupitiya</b> යනු ශ්‍රී ලාංකීය දරු පරපුරේ අධ්‍යාපනය ඩිජිටල් තාක්ෂණය ඔස්සේ ඉහළ නැංවීමට කැපවී සිටින මෙරට ප්‍රමුඛතම වේදිකාවයි. 
+                අනාගත ලෝකයට ගැළපෙන කුසලතා පූර්පුරක් බිහි කිරීම අපගේ අරමුණයි. 
+                සංස්කෘතික වටිනාකම් තාක්ෂණය සමඟ මුසු කර දරුවන් අතරට ගෙනයාම අපගේ එක් මෙහෙවරකි.
+            </p>
+            <div class="social-links">
+                <a href="https://whatsapp.com/channel/0029Vb7Kc37CRs1lKrYi3A1R" target="_blank" class="social-link">Whatsapp</a>
+                <a href="https://www.facebook.com/profile.php?id=61584459515379" target="_blank" class="social-link">Facebook</a>
+                <a href="https://youtube.com/@dpitcampuspannala?si=N-Ip4r4A8ctIfbfK" target="_blank" class="social-link">Youtube</a>
             </div>
-        </div>
-
-        <button class="btn-toss" id="tossBtn" onclick="tossKeta()">කැටය පෙරළමු! 🎲</button>
-
-        <div class="score-board">
-            වාසනා ලකුණු: <span id="pointsCount">100</span>
         </div>
     </div>
 
-    <a href="games.html" class="back-link">← ආපසු මණ්ඩපයට</a>
-</div>
+    <script>
+        const bgAudio = document.getElementById("avuruduAudio");
+        const musicIcon = document.getElementById("musicIcon");
 
-<audio id="avuruduAudio" loop><source src="avurudu_song.mp3" type="audio/mpeg"></audio>
+        function openAbout() { document.getElementById("aboutModal").style.display = "flex"; }
+        function closeAbout() { document.getElementById("aboutModal").style.display = "none"; }
 
-<div class="music-control" onclick="toggleMusic()">
-    <span id="musicIcon">🎵</span>
-    <span id="musicText">Music</span>
-</div>
+        window.addEventListener("load", () => {
+            const isPlaying = localStorage.getItem("musicPlaying") === "true";
+            const lastTime = localStorage.getItem("musicTime");
+            if (lastTime) bgAudio.currentTime = parseFloat(lastTime);
+            if (isPlaying) {
+                bgAudio.play().then(() => updateMusicUI(true)).catch(() => updateMusicUI(false));
+            }
+        });
 
-<script>
-    let selectedNumber = 0;
-    let currentPoints = 100;
-    let isRolling = false;
+        bgAudio.addEventListener("timeupdate", () => localStorage.setItem("musicTime", bgAudio.currentTime));
 
-    const ketaDisplay = document.getElementById('ketaResult');
-    const tossBtn = document.getElementById('tossBtn');
-    const pointsCount = document.getElementById('pointsCount');
-    const resultMsg = document.getElementById('resultMessage');
-    const outcomeText = document.getElementById('outcomeText');
-    const pointsText = document.getElementById('pointsText');
-
-    // කැටයේ මුහුණත් (Emojis)
-    const ketaFaces = ['🎲', '⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
-
-    function selectNumber(num) {
-        if (isRolling) return;
-        selectedNumber = num;
-        
-        // පැරණි සිලෙක්ට් අයින් කිරීම
-        document.querySelectorAll('.bet-btn').forEach(btn => btn.classList.remove('selected'));
-        
-        // අලුත් සිලෙක්ට් එක එකතු කිරීම
-        document.querySelectorAll('.bet-btn')[num-1].classList.add('selected');
-        
-        // ටොස් බටන් එක Enable කිරීම
-        tossBtn.disabled = false;
-        resultMsg.style.display = 'none';
-    }
-
-    function tossKeta() {
-        if (selectedNumber === 0 || isRolling) return;
-        isRolling = true;
-        tossBtn.disabled = true;
-        resultMsg.style.display = 'none';
-        
-        // ඇනිමේෂන් එක පටන් ගැනීම
-        ketaDisplay.classList.add('keta-rolling');
-        ketaDisplay.innerText = '🎲';
-        
-        // තත්පර 1.5ක් රෝල් කිරීම
-        setTimeout(() => {
-            // ඇනිමේෂන් එක නැවැත්වීම
-            ketaDisplay.classList.remove('keta-rolling');
-            
-            // අහඹු අංකයක් ලබා ගැනීම (1-6)
-            const resultNum = Math.floor(Math.random() * 6) + 1;
-            ketaDisplay.innerText = ketaFaces[resultNum];
-            
-            // ජයග්‍රහණය පරීක්ෂා කිරීම
-            checkWin(resultNum);
-            
-            isRolling = false;
-        }, 1500);
-    }
-
-    function checkWin(result) {
-        let outcome, pointsChange;
-        
-        if (result === selectedNumber) {
-            // ජයග්‍රහණය (ලකුණු 50ක් එකතු වේ)
-            outcome = "සුභ පැතුම්! ඔබ දිනුවා! 🎉";
-            pointsChange = 50;
-            outcomeText.style.color = "#27ae60";
-        } else {
-            // පරාජය (ලකුණු 10ක් අඩු වේ)
-            outcome = "අයියෝ! වැරදියි. ❌";
-            pointsChange = -10;
-            outcomeText.style.color = "#c0392b";
+        function toggleMusic() {
+            if (bgAudio.paused) {
+                bgAudio.play();
+                localStorage.setItem("musicPlaying", "true");
+                updateMusicUI(true);
+            } else {
+                bgAudio.pause();
+                localStorage.setItem("musicPlaying", "false");
+                updateMusicUI(false);
+            }
         }
 
-        currentPoints += pointsChange;
-        if (currentPoints < 0) currentPoints = 0;
-        pointsCount.innerText = currentPoints;
-
-        outcomeText.innerText = outcome;
-        pointsText.innerText = (pointsChange > 0 ? "+" : "") + pointsChange + " ලකුණු";
-        pointsText.style.color = pointsChange > 0 ? "#27ae60" : "#c0392b";
-        
-        resultMsg.style.display = 'flex';
-        
-        // නැවත ක්‍රීඩා කිරීමට සූදානම් කිරීම (සිලෙක්ට් එක අයින් කිරීම)
-        selectedNumber = 0;
-        document.querySelectorAll('.bet-btn').forEach(btn => btn.classList.remove('selected'));
-    }
-
-    // Music Control Logic
-    const audio = document.getElementById("avuruduAudio");
-    const musicIcon = document.getElementById("musicIcon");
-
-    function toggleMusic() {
-        if (audio.paused) {
-            audio.play(); localStorage.setItem("musicPlaying", "true"); musicIcon.innerText = "⏸️";
-        } else {
-            audio.pause(); localStorage.setItem("musicPlaying", "false"); musicIcon.innerText = "🎵";
+        function updateMusicUI(isPlaying) {
+            musicIcon.innerText = isPlaying ? "⏸️" : "🎵";
         }
-    }
 
-    window.addEventListener("load", () => {
-        const isPlaying = localStorage.getItem("musicPlaying") === "true";
-        const lastTime = localStorage.getItem("musicTime");
-        if (lastTime) audio.currentTime = parseFloat(lastTime);
-        if (isPlaying) { audio.play().catch(() => {}); musicIcon.innerText = "⏸️"; }
-        tossBtn.disabled = true; // ආරම්භයේදී අංකයක් තෝරන තෙක් Toss disable වේ
-    });
-
-    audio.addEventListener("timeupdate", () => localStorage.setItem("musicTime", audio.currentTime));
-</script>
+        window.onclick = function(event) {
+            if (event.target == document.getElementById("aboutModal")) closeAbout();
+        }
+    </script>
 </body>
 </html>
